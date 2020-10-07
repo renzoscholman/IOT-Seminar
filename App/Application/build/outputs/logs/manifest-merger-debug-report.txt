@@ -1,0 +1,181 @@
+-- Merging decision tree log ---
+manifest
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:20:1-50:12
+INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:20:1-50:12
+INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:20:1-50:12
+MERGED from [com.android.support:support-v13:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\5296b0a657e9bc1aaa5e39906a28a27c\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-v4:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\3f7184c99697fa01fe7db0db641fd536\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:cardview-v7:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\66f28a49e8b749236ffa51ff60116479\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:appcompat-v7:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\8ee3bd6cf4bb81d5f9fe28d4a478950b\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-media-compat:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\f280d2f68fc1d32a04d1c2b6519ab5f5\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-fragment:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\751f3d5d16eb5d9d302ecbf86b3de2ca\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\2b7a2ac179834e6405412f4ba1c2bc86\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-ui:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\42d2b7b90e17bf2075990b5d4d4cde6a\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-core-utils:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\d4b1919e145d23ebeac80c471a56d617\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-vector-drawable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\aedb41035cfd0d47cea85b0cf9d8e47a\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:loader:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\4b382163471a1a863a75b9dd92e04f6a\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:viewpager:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\2ba03695f34c6f637d2ca59cec2b6b55\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:coordinatorlayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\279824c75b209fa18a8165ef2481e8a1\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:drawerlayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\7438495137a1d59e6f846a9c9f4b6449\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:slidingpanelayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\e4b0581b5331d2df17c29a52263961d7\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:customview:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\d5e64b44e273886c2a3f295232edbc70\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\a8955374a07389aa77fad4f63a503fdf\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\5c3f59cb51ce3fe470daacd438700d41\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:support-compat:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\3ff726dd8d71b9f36f9e2f270296ad6a\AndroidManifest.xml:17:1-24:12
+MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\c051b5f42bb83c049ba4f3a92609d6ff\AndroidManifest.xml:17:1-25:12
+MERGED from [com.android.support:cursoradapter:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\8af1fe073e3bf4ff24e7e23b3a5ea770\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:runtime:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\b6365c566084c7ee9d188ce1b3e888f8\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:documentfile:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\221d9cf2d32f325160c8d160f3b149ef\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\68b1d0afbe9e7138e302b35ae1e31f22\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:print:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\05dc54cd117a595e3b10ff66ee0652a3\AndroidManifest.xml:17:1-22:12
+MERGED from [com.android.support:interpolator:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\7b49d4d037a8feed027655559184c3ea\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\fdda8032a53643bf06141d24eadcb860\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\d77812fad5f080cb0fb043ff5193df55\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\fc684230e55b86783f0e3272e52f65ee\AndroidManifest.xml:17:1-22:12
+MERGED from [android.arch.core:runtime:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\0bb23afaea6caa81ce4f4b25503856b4\AndroidManifest.xml:17:1-22:12
+INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:20:1-50:12
+INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:20:1-50:12
+	package
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:21:5-50
+	android:versionName
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:23:5-30
+		INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+		INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:20:11-69
+	android:versionCode
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:22:5-28
+		INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+		INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+uses-feature#android.hardware.bluetooth_le
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:31:5-89
+	android:required
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:31:64-87
+	android:name
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:31:19-63
+uses-permission#android.permission.BLUETOOTH
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:33:5-67
+	android:name
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:33:22-65
+uses-permission#android.permission.BLUETOOTH_ADMIN
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:34:5-73
+	android:name
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:34:22-71
+application
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:36:5-48:19
+MERGED from [com.android.support:support-compat:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\3ff726dd8d71b9f36f9e2f270296ad6a\AndroidManifest.xml:22:5-94
+MERGED from [com.android.support:support-compat:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\3ff726dd8d71b9f36f9e2f270296ad6a\AndroidManifest.xml:22:5-94
+MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\c051b5f42bb83c049ba4f3a92609d6ff\AndroidManifest.xml:22:5-23:19
+MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\c051b5f42bb83c049ba4f3a92609d6ff\AndroidManifest.xml:22:5-23:19
+	android:appComponentFactory
+		ADDED from [com.android.support:support-compat:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\3ff726dd8d71b9f36f9e2f270296ad6a\AndroidManifest.xml:22:18-91
+	android:label
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:36:18-50
+	android:icon
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:37:9-45
+	android:theme
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:38:9-56
+activity#com.example.android.bluetoothlegatt.MainActivity
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:39:9-44:20
+	android:name
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:39:19-47
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:40:13-43:29
+action#android.intent.action.MAIN
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:41:17-68
+	android:name
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:41:25-66
+category#android.intent.category.LAUNCHER
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:42:17-76
+	android:name
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:42:27-74
+activity#com.example.android.bluetoothlegatt.DeviceScanActivity
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:45:9-88
+	android:label
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:45:54-86
+	android:name
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:45:19-53
+activity#com.example.android.bluetoothlegatt.DeviceControlActivity
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:46:9-58
+	android:name
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:46:19-56
+service#com.example.android.bluetoothlegatt.BluetoothLeService
+ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:47:9-77
+	android:enabled
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:47:53-75
+	android:name
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml:47:18-52
+uses-sdk
+INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+MERGED from [com.android.support:support-v13:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\5296b0a657e9bc1aaa5e39906a28a27c\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v13:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\5296b0a657e9bc1aaa5e39906a28a27c\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\3f7184c99697fa01fe7db0db641fd536\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-v4:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\3f7184c99697fa01fe7db0db641fd536\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cardview-v7:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\66f28a49e8b749236ffa51ff60116479\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cardview-v7:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\66f28a49e8b749236ffa51ff60116479\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\8ee3bd6cf4bb81d5f9fe28d4a478950b\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:appcompat-v7:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\8ee3bd6cf4bb81d5f9fe28d4a478950b\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\f280d2f68fc1d32a04d1c2b6519ab5f5\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-media-compat:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\f280d2f68fc1d32a04d1c2b6519ab5f5\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\751f3d5d16eb5d9d302ecbf86b3de2ca\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-fragment:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\751f3d5d16eb5d9d302ecbf86b3de2ca\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\2b7a2ac179834e6405412f4ba1c2bc86\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:animated-vector-drawable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\2b7a2ac179834e6405412f4ba1c2bc86\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\42d2b7b90e17bf2075990b5d4d4cde6a\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-ui:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\42d2b7b90e17bf2075990b5d4d4cde6a\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\d4b1919e145d23ebeac80c471a56d617\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-core-utils:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\d4b1919e145d23ebeac80c471a56d617\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\aedb41035cfd0d47cea85b0cf9d8e47a\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-vector-drawable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\aedb41035cfd0d47cea85b0cf9d8e47a\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\4b382163471a1a863a75b9dd92e04f6a\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:loader:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\4b382163471a1a863a75b9dd92e04f6a\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\2ba03695f34c6f637d2ca59cec2b6b55\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:viewpager:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\2ba03695f34c6f637d2ca59cec2b6b55\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\279824c75b209fa18a8165ef2481e8a1\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:coordinatorlayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\279824c75b209fa18a8165ef2481e8a1\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\7438495137a1d59e6f846a9c9f4b6449\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:drawerlayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\7438495137a1d59e6f846a9c9f4b6449\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\e4b0581b5331d2df17c29a52263961d7\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:slidingpanelayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\e4b0581b5331d2df17c29a52263961d7\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\d5e64b44e273886c2a3f295232edbc70\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:customview:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\d5e64b44e273886c2a3f295232edbc70\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\a8955374a07389aa77fad4f63a503fdf\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:swiperefreshlayout:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\a8955374a07389aa77fad4f63a503fdf\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\5c3f59cb51ce3fe470daacd438700d41\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:asynclayoutinflater:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\5c3f59cb51ce3fe470daacd438700d41\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\3ff726dd8d71b9f36f9e2f270296ad6a\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:support-compat:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\3ff726dd8d71b9f36f9e2f270296ad6a\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\c051b5f42bb83c049ba4f3a92609d6ff\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:versionedparcelable:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\c051b5f42bb83c049ba4f3a92609d6ff\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\8af1fe073e3bf4ff24e7e23b3a5ea770\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:cursoradapter:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\8af1fe073e3bf4ff24e7e23b3a5ea770\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\b6365c566084c7ee9d188ce1b3e888f8\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:runtime:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\b6365c566084c7ee9d188ce1b3e888f8\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\221d9cf2d32f325160c8d160f3b149ef\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:documentfile:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\221d9cf2d32f325160c8d160f3b149ef\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\68b1d0afbe9e7138e302b35ae1e31f22\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:localbroadcastmanager:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\68b1d0afbe9e7138e302b35ae1e31f22\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\05dc54cd117a595e3b10ff66ee0652a3\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:print:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\05dc54cd117a595e3b10ff66ee0652a3\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\7b49d4d037a8feed027655559184c3ea\AndroidManifest.xml:20:5-44
+MERGED from [com.android.support:interpolator:28.0.0] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\7b49d4d037a8feed027655559184c3ea\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\fdda8032a53643bf06141d24eadcb860\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:viewmodel:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\fdda8032a53643bf06141d24eadcb860\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\d77812fad5f080cb0fb043ff5193df55\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\d77812fad5f080cb0fb043ff5193df55\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\fc684230e55b86783f0e3272e52f65ee\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.lifecycle:livedata-core:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\fc684230e55b86783f0e3272e52f65ee\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\0bb23afaea6caa81ce4f4b25503856b4\AndroidManifest.xml:20:5-44
+MERGED from [android.arch.core:runtime:1.1.1] C:\Users\Renzo\.gradle\caches\transforms-2\files-2.1\0bb23afaea6caa81ce4f4b25503856b4\AndroidManifest.xml:20:5-44
+INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+		INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+		ADDED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
+		INJECTED from E:\UNI\Master\IOTS\IOT-Seminar\App\Application\src\main\AndroidManifest.xml
