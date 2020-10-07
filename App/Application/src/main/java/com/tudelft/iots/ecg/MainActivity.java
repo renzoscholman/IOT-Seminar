@@ -221,10 +221,14 @@ public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeLis
             range = UPPER_LIMIT - LOWER_LIMIT;
         }
 
+        float lastVal = LOWER_LIMIT;
         for (int i = 0; i < count; i++) {
 
-            float val = (float) (Math.random() * range) + LOWER_LIMIT;
+            float val = lastVal + (float) (Math.random() * 10f - 5f);
+            if(val < LOWER_LIMIT) val = LOWER_LIMIT;
+            if(val > UPPER_LIMIT) val = UPPER_LIMIT;
             values.add(new Entry(i, val, getResources().getDrawable(R.drawable.star)));
+            lastVal = val;
         }
 
         LineDataSet set1;
@@ -241,6 +245,10 @@ public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeLis
             set1 = new LineDataSet(values, "DataSet 1");
 
             set1.setDrawIcons(false);
+
+            // Set cubic filter
+            set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+            set1.setCubicIntensity(0.2f);
 
             // draw dashed line
             set1.enableDashedLine(10f, 5f, 0f);
