@@ -23,6 +23,7 @@
     <string name="disconnected">Disconnected</string>
     <string name="title_devices">ECG Monitor</string>
     <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="error_bluetooth_le_not_supported">Bluetooth LE not supported.</string>
 
     <string name="dash">-</string>
 
