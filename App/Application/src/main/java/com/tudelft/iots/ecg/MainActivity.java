@@ -1,7 +1,9 @@
 package com.tudelft.iots.ecg;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Typeface;
@@ -35,7 +37,7 @@ import com.github.mikephil.charting.utils.Utils;
 
 import java.util.ArrayList;
 
-public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeListener,
+public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarChangeListener,
         OnChartValueSelectedListener {
     protected String device_address;
     private LineChart chart;
@@ -57,8 +59,11 @@ public class MainActivity extends Activity implements SeekBar.OnSeekBarChangeLis
         getActionBar().setTitle(R.string.title_devices);
         tfRegular = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
 
-        if(device_address != null){
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file), Context.MODE_PRIVATE);
+        mDeviceAddress = preferences.getString(getString(R.string.preference_device_address), null);
+        if(mDeviceAddress != null){
             Toast.makeText(this, "Started app, device is set: "+device_address, Toast.LENGTH_SHORT).show();
+            startService();
         } else {
             Toast.makeText(this, "Started app, no device set", Toast.LENGTH_SHORT).show();
         }
