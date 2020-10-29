@@ -1,18 +1,24 @@
 package com.tudelft.iots.ecg;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 public abstract class ServiceActivity extends Activity {
     protected static String TAG;
 
     protected BluetoothLeService mBluetoothLeService;
+
+    protected BroadcastReceiver mGattUpdateReceiver;
 
     protected String mDeviceName;
     protected String mDeviceAddress;
@@ -27,8 +33,12 @@ public abstract class ServiceActivity extends Activity {
                 Log.e(TAG, "Unable to initialize Bluetooth");
                 //finish();
             }
-            // Automatically connects to the device upon successful start-up initialization.
-            mBluetoothLeService.connect(mDeviceAddress);
+            if (mDeviceAddress != null && mDeviceAddress.length() == 0) {
+                Log.e(TAG, "No device address given");
+            } else {
+                // Automatically connects to the device upon successful start-up initialization.
+                mBluetoothLeService.connect(mDeviceAddress);
+            }
         }
 
         @Override
@@ -37,7 +47,25 @@ public abstract class ServiceActivity extends Activity {
         }
     };
 
-    protected void startService() {
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
+        if (mBluetoothLeService != null) {
+            final boolean result = mBluetoothLeService.connect(mDeviceAddress);
+            Log.d(TAG, "Connect request result=" + result);
+        }
+        Toast.makeText(this, R.string.notice_resume, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file), Context.MODE_PRIVATE);
+        mDeviceAddress = preferences.getString(getString(R.string.preference_device_address), null);
+
         Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
         bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
     }
@@ -47,5 +75,14 @@ public abstract class ServiceActivity extends Activity {
         super.onDestroy();
         unbindService(mServiceConnection);
         mBluetoothLeService = null;
+    }
+
+    protected IntentFilter makeGattUpdateIntentFilter() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_CONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_DISCONNECTED);
+        intentFilter.addAction(BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED);
+        intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
+        return intentFilter;
     }
 }

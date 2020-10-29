@@ -32,7 +32,7 @@
     <string name="unknown_service">Unknown service</string>
 
     <string name="notice_created">Created activity</string>
-    <string name="notice_resume">Resumed activity</string>
+    <string name="notice_resume">Resumed bluetooth service activity</string>
 
     <!-- Menu items -->
     <string name="menu_connect">Connect</string>
