@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/activity_date"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_marginBottom="0dp"
+                android:padding="3dip" />
+
+            <TextView
+                android:id="@+id/activity_time"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:layout_marginTop="1dp"
+                android:padding="3dip" />
+
+            <TableLayout
+                android:background="#000000"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:stretchColumns="*">
+                <TableRow
+                    android:layout_margin="1dp">
+                    <TextView
+                        android:background="#ffffff"
+                        android:id="@+id/activity_hr_min_label"
+                        android:padding="3dip" />
+                    <TextView
+                        android:background="#ffffff"
+                        android:id="@+id/activity_hr_min"
+                        android:gravity="end"
+                        android:layout_marginStart="1dp"
+                        android:padding="3dip" />
+                </TableRow>
+                <TableRow
+                    android:layout_margin="1dp">
+                    <TextView
+                        android:background="#ffffff"
+                        android:id="@+id/activity_hr_avg_label"
+                        android:padding="3dip" />
+                    <TextView
+                        android:background="#ffffff"
+                        android:id="@+id/activity_hr_avg"
+                        android:gravity="end"
+                        android:layout_marginStart="1dp"
+                        android:padding="3dip" />
+                </TableRow>
+                <TableRow
+                    android:layout_margin="1dp">
+                    <TextView
+                        android:background="#ffffff"
+                        android:id="@+id/activity_hr_max_label"
+                        android:padding="3dip" />
+                    <TextView
+                        android:background="#ffffff"
+                        android:id="@+id/activity_hr_max"
+                        android:gravity="end"
+                        android:layout_marginStart="1dp"
+                        android:padding="3dip" />
+                </TableRow>
+            </TableLayout>
+
+            <TableLayout
+                android:background="#000000"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="10dp"
+                android:stretchColumns="*">
+                <TableRow
+                    android:layout_margin="1dp">
+                    <TextView
+                        android:background="@android:color/darker_gray"
+                        android:id="@+id/activity_zone_0_label"
+                        android:padding="3dip" />
+                    <TextView
+                        android:background="@android:color/darker_gray"
+                        android:id="@+id/activity_zone_0"
+                        android:gravity="end"
+                        android:layout_marginStart="1dp"
+                        android:padding="3dip" />
+                </TableRow>
+                <TableRow
+                    android:layout_margin="1dp">
+                    <TextView
+                        android:background="@android:color/darker_gray"
+                        android:id="@+id/activity_zone_1_label"
+                        android:padding="3dip" />
+                    <TextView
+                        android:background="@android:color/darker_gray"
+                        android:id="@+id/activity_zone_1"
+                        android:gravity="end"
+                        android:layout_marginStart="1dp"
+                        android:padding="3dip" />
+                </TableRow>
+                <TableRow
+                    android:layout_margin="1dp">
+                    <TextView
+                        android:background="@android:color/holo_blue_light"
+                        android:id="@+id/activity_zone_2_label"
+                        android:padding="3dip" />
+                    <TextView
+                        android:background="@android:color/holo_blue_light"
+                        android:id="@+id/activity_zone_2"
+                        android:gravity="end"
+                        android:layout_marginStart="1dp"
+                        android:padding="3dip" />
+                </TableRow>
+                <TableRow
+                    android:layout_margin="1dp">
+                    <TextView
+                        android:background="@android:color/holo_green_light"
+                        android:id="@+id/activity_zone_3_label"
+                        android:padding="3dip" />
+                    <TextView
+                        android:background="@android:color/holo_green_light"
+                        android:id="@+id/activity_zone_3"
+                        android:gravity="end"
+                        android:layout_marginStart="1dp"
+                        android:padding="3dip" />
+                </TableRow>
+                <TableRow
+                    android:layout_margin="1dp">
+                    <TextView
+                        android:background="@android:color/holo_orange_light"
+                        android:id="@+id/activity_zone_4_label"
+                        android:padding="3dip" />
+                    <TextView
+                        android:background="@android:color/holo_orange_light"
+                        android:id="@+id/activity_zone_4"
+                        android:gravity="end"
+                        android:layout_marginStart="1dp"
+                        android:padding="3dip" />
+                </TableRow>
+                <TableRow
+                    android:layout_margin="1dp">
+                    <TextView
+                        android:background="@android:color/holo_red_light"
+                        android:id="@+id/activity_zone_5_label"
+                        android:padding="3dip" />
+                    <TextView
+                        android:background="@android:color/holo_red_light"
+                        android:id="@+id/activity_zone_5"
+                        android:gravity="end"
+                        android:layout_marginStart="1dp"
+                        android:padding="3dip" />
+                </TableRow>
+            </TableLayout>
+
+
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:layout_margin="10dp"
+                android:orientation="vertical" >
+
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/chart1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="0.6"
+                    android:visibility="visible" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

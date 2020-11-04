@@ -14,6 +14,7 @@
      limitations under the License.
 -->
 <resources>
+    <!-- Bluetooth messages -->
     <string name="ble_not_supported">BLE is not supported</string>
     <string name="label_data">Data:</string>
     <string name="label_device_address">Device address:</string>
@@ -21,16 +22,29 @@
     <string name="no_data">No data</string>
     <string name="connected">Connected</string>
     <string name="disconnected">Disconnected</string>
-    <string name="title_devices">ECG Monitor</string>
-    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
-    <string name="error_bluetooth_le_not_supported">Bluetooth LE not supported.</string>
 
     <string name="dash">-</string>
 
+    <!-- Activity tracking -->
+    <string name="start_tracking">Start Tracking</string>
+    <string name="stop_tracking">Stop Tracking</string>
+    <string name="show_last_activity">Show last tracked activity</string>
+
+    <!-- Activity Titles -->
+    <string name="title_devices">ECG Monitor</string>
+    <string name="title_history">Activity History</string>
+    <string name="title_tracked">Tracked Activity</string>
+    <string name="title_tracking">Activity Tracking</string>
+
+    <!-- Error messages -->
     <string name="unknown_device">Unknown device</string>
     <string name="unknown_characteristic">Unknown characteristic</string>
     <string name="unknown_service">Unknown service</string>
+    <string name="error_bluetooth_not_supported">Bluetooth not supported.</string>
+    <string name="error_bluetooth_le_not_supported">Bluetooth LE not supported.</string>
+    <string name="unknown_activity">Cannot find activity.</string>
 
+    <string name="notice_wait_activity_processing">Please wait whilst recently tracked activity is being processed</string>
     <string name="notice_created">Created activity</string>
     <string name="notice_resume">Resumed bluetooth service activity</string>
 
@@ -41,6 +55,23 @@
     <string name="menu_stop">Stop</string>
     <string name="menu_home">Home</string>
     <string name="menu_manage_devices">Manage Devices</string>
+    <string name="menu_track_activity">Activity Tracking</string>
+    <string name="menu_history_activity">Activity History</string>
+    <string name="menu_enable_ecg">Enable ECG</string>
+    <string name="menu_disable_ecg">Disable ECG</string>
+
+    <!-- Activity items -->
+    <string name="zone_0">Zone 0 (HR &lt; %1$d)</string>
+    <string name="zone_1">Zone 1 (%1$d &lt; HR &lt; %2$d)</string>
+    <string name="zone_2">Zone 2 (%1$d &lt; HR &lt; %2$d)</string>
+    <string name="zone_3">Zone 3 (%1$d &lt; HR &lt; %2$d)</string>
+    <string name="zone_4">Zone 4 (%1$d &lt; HR &lt; %2$d)</string>
+    <string name="zone_5">Zone 5 (HR > %1$d)</string>
+    <string name="activity_hr_min">Minimum heart rate</string>
+    <string name="activity_hr_avg">Average heart rate</string>
+    <string name="activity_hr_max">Maximum heart rate</string>
+    <string name="activity_date">Activity on %1$s</string>
+    <string name="activity_time">Started at %1$s and stopped at %2$s</string>
 
     <!-- Preference items -->
     <string name="preference_file">ecg_settings</string>

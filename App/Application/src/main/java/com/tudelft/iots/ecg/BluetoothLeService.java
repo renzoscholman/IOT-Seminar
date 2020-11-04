@@ -17,6 +17,7 @@
 package com.tudelft.iots.ecg;
 
 import android.app.Service;
+import android.arch.persistence.room.Room;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -33,8 +34,14 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.tudelft.iots.ecg.classes.SampleGattAttributes;
+import com.tudelft.iots.ecg.database.AppDatabase;
+import com.tudelft.iots.ecg.database.interfaces.HeartRateDao;
+import com.tudelft.iots.ecg.database.model.HeartRate;
+
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Service for managing connection and data communication with a GATT server hosted on a
@@ -50,6 +57,10 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
+    private boolean initialized = false;
+
+    AppDatabase db;
+    long startTime = 0;
 
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -63,6 +74,10 @@ public class BluetoothLeService extends Service {
             "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
     public final static String ACTION_DATA_AVAILABLE =
             "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+    public final static String ACTION_DATA_AVAILABLE_ECG =
+            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE_ECG";
+    public final static String ACTION_DATA_AVAILABLE_HR =
+            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE_HR";
     public final static String EXTRA_DATA =
             "com.example.bluetooth.le.EXTRA_DATA";
 
@@ -133,6 +148,12 @@ public class BluetoothLeService extends Service {
         sendBroadcast(intent);
     }
 
+    private void broadcastUpdatei(final String action, long i) {
+        final Intent intent = new Intent(action);
+        intent.putExtra(EXTRA_DATA, i);
+        sendBroadcast(intent);
+    }
+
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
@@ -153,6 +174,12 @@ public class BluetoothLeService extends Service {
             final int heartRate = characteristic.getIntValue(format, 1);
             Log.d(TAG, String.format("Received heart rate: %d", heartRate));
             intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
+
+            HeartRateDao HR = db.heartRateDao();
+            HeartRate hr = new HeartRate();
+            hr.heartRate = heartRate;
+            hr.timestamp = System.currentTimeMillis();
+            HR.insert(hr);
         } else if (UUID_ECG_MEASUREMENTS.equals(characteristic.getUuid())){
             // For all other profiles, writes the data formatted in HEX.
             final byte[] data = characteristic.getValue();
@@ -198,12 +225,47 @@ public class BluetoothLeService extends Service {
 
     private final IBinder mBinder = new LocalBinder();
 
+    public int initDB(){
+        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "heart-rate-storage")
+                .fallbackToDestructiveMigration()
+                .build();
+
+        startTime = db.insertDefaultValues();
+        return 0;
+    }
+
+    public void threadedTestData(){
+        initDB();
+        long i = 1;
+        int length = db.ecgDao().count();
+        int perSec = 10;
+        long mult = 1000 / perSec;
+        while(i < (length) / perSec){
+            try {
+                TimeUnit.MILLISECONDS.sleep(1000/perSec);
+            } catch (InterruptedException e) {
+                //e.printStackTrace();
+            }
+            broadcastUpdatei(ACTION_DATA_AVAILABLE, startTime + i*mult);
+            i++;
+        }
+    }
+
     /**
      * Initializes a reference to the local Bluetooth adapter.
      *
      * @return Return true if the initialization is successful.
      */
     public boolean initialize() {
+        if(initialized) return true;
+        initialized = true;
+
+        new Thread(new Runnable() {
+            public void run() {
+                threadedTestData();
+            }
+        }).start();
+
         // For API level 18 and above, get a reference to BluetoothAdapter through
         // BluetoothManager.
         if (mBluetoothManager == null) {

@@ -10,11 +10,12 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
-public abstract class ServiceActivity extends Activity {
-    protected static String TAG;
+public abstract class ServiceActivity extends AppCompatActivity {
+    protected static String TAG = "ServiceActivity";
 
     protected BluetoothLeService mBluetoothLeService;
 
@@ -46,6 +47,15 @@ public abstract class ServiceActivity extends Activity {
             mBluetoothLeService = null;
         }
     };
+    protected boolean serviceConnected = false;
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(mGattUpdateReceiver != null){
+            unregisterReceiver(mGattUpdateReceiver);
+        }
+    }
 
     @Override
     protected void onResume() {
@@ -56,24 +66,27 @@ public abstract class ServiceActivity extends Activity {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
         }
-        Toast.makeText(this, R.string.notice_resume, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        SharedPreferences preferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file), Context.MODE_PRIVATE);
-        mDeviceAddress = preferences.getString(getString(R.string.preference_device_address), null);
+        if(savedInstanceState == null){
+            SharedPreferences preferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file), Context.MODE_PRIVATE);
+            mDeviceAddress = preferences.getString(getString(R.string.preference_device_address), null);
 
-        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
-        bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+            Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+            serviceConnected = bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unbindService(mServiceConnection);
+        if(serviceConnected){
+            unbindService(mServiceConnection);
+        }
         mBluetoothLeService = null;
     }
 

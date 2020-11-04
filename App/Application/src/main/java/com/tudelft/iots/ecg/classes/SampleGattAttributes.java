@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tudelft.iots.ecg;
+package com.tudelft.iots.ecg.classes;
 
 import java.util.HashMap;
 
