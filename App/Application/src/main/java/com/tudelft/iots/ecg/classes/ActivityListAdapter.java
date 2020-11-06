@@ -1,5 +1,6 @@
 package com.tudelft.iots.ecg.classes;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class ActivityListAdapter extends BaseAdapter {
     public void addActivity(Activity activity) {
         if(!mActivities.contains(activity)) {
             mActivities.add(activity);
+            notifyDataSetChanged();
         }
     }
 

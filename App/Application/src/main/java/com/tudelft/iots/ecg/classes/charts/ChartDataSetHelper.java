@@ -16,11 +16,13 @@ public class ChartDataSetHelper {
         set1.setDrawIcons(false);
 
         // black lines and points
+        set1.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
+        set1.setCubicIntensity(0.2f);
         set1.setColor(Color.BLACK);
         set1.setCircleColor(Color.BLACK);
 
         // line thickness and point size
-        set1.setLineWidth(0.1f);
+        set1.setLineWidth(1f);
         set1.setCircleRadius(1f);
 
         // draw points as solid circles
@@ -47,7 +49,7 @@ public class ChartDataSetHelper {
         set1.setDrawIcons(false);
 
         // Set cubic filter
-        set1.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        set1.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
         set1.setCubicIntensity(0.2f);
 
         // black lines and points
@@ -55,8 +57,8 @@ public class ChartDataSetHelper {
         set1.setCircleColor(Color.RED);
 
         // line thickness and point size
-        set1.setLineWidth(1f);
-        set1.setCircleRadius(3f);
+        set1.setLineWidth(3f);
+        set1.setCircleRadius(5f);
 
         // draw points as solid circles
         set1.setDrawCircleHole(false);

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2013 The Android Open Source Project
+<?xml version="1.0" encoding="utf-8"?><!-- Copyright (C) 2013 The Android Open Source Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -44,9 +43,14 @@
     <string name="error_bluetooth_le_not_supported">Bluetooth LE not supported.</string>
     <string name="unknown_activity">Cannot find activity.</string>
 
+    <!-- Notice messages -->
     <string name="notice_wait_activity_processing">Please wait whilst recently tracked activity is being processed</string>
     <string name="notice_created">Created activity</string>
     <string name="notice_resume">Resumed bluetooth service activity</string>
+    <string name="notice_preferences">Please first fill in the preferences before using this app.</string>
+    <string name="notice_no_activity_history">No history of activities exist, please track an activity first.</string>
+    <string name="notice_hr_monitor">Please connect to heart rate monitor before you continue using this app.</string>
+    <string name="notice_ble_unsupported">This app will not work properly as the device does not support Bluetooth Low Energy.</string>
 
     <!-- Menu items -->
     <string name="menu_connect">Connect</string>
@@ -54,6 +58,7 @@
     <string name="menu_scan">Scan</string>
     <string name="menu_stop">Stop</string>
     <string name="menu_home">Home</string>
+    <string name="menu_preferences">Preferences</string>
     <string name="menu_manage_devices">Manage Devices</string>
     <string name="menu_track_activity">Activity Tracking</string>
     <string name="menu_history_activity">Activity History</string>
@@ -74,6 +79,10 @@
     <string name="activity_time">Started at %1$s and stopped at %2$s</string>
 
     <!-- Preference items -->
-    <string name="preference_file">ecg_settings</string>
-    <string name="preference_device_address">preference_device_address</string>
+    <string name="preference_finished">pref_finished</string>
+    <string name="preference_use_ecg">pref_use_ecg</string>
+    <string name="preference_user_age">pref_user_age</string>
+    <string name="preference_device_address">pref_device_address</string>
+    <string name="preference_mqtt_server">pref_mqtt_server</string>
+    <string name="preference_mqtt_client_id">pref_mqtt_client_id</string>
 </resources>

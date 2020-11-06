@@ -23,6 +23,10 @@
         android:checkable="false"
         android:orderInCategory="1"
         android:title="@string/menu_history_activity" />
+    <item android:id="@+id/menu_preferences"
+        android:checkable="false"
+        android:orderInCategory="2"
+        android:title="@string/menu_preferences" />
     <item android:id="@+id/menu_enable_ecg"
         android:checkable="false"
         android:orderInCategory="2"

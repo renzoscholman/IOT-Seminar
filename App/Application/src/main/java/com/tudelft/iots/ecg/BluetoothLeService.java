@@ -32,6 +32,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.tudelft.iots.ecg.classes.SampleGattAttributes;
@@ -39,6 +40,12 @@ import com.tudelft.iots.ecg.database.AppDatabase;
 import com.tudelft.iots.ecg.database.interfaces.HeartRateDao;
 import com.tudelft.iots.ecg.database.model.HeartRate;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+import org.eclipse.paho.client.mqttv3.IMqttToken;
+import org.eclipse.paho.client.mqttv3.MqttException;
+
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -57,6 +64,7 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
+    private MqttAndroidClient mMQTTClient;
     private boolean initialized = false;
 
     AppDatabase db;
@@ -266,6 +274,26 @@ public class BluetoothLeService extends Service {
             }
         }).start();
 
+
+        mMQTTClient = new MqttAndroidClient(this.getApplicationContext(), "ADDRESS", "ID");
+        try{
+            Log.i("Connection", "Starting connection ");
+            IMqttToken token = mMQTTClient.connect();
+            token.setActionCallback(new IMqttActionListener() {
+                @Override
+                public void onSuccess(IMqttToken asyncActionToken) {
+                    Log.i("Connection", "success ");
+                }
+
+                @Override
+                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+                    Log.e("Connection", "Failed "+ Arrays.toString(exception.getStackTrace()));
+                }
+            });
+        } catch (MqttException error){
+            Log.e("Connection", "Error "+ Arrays.toString(error.getStackTrace()));
+        }
+
         // For API level 18 and above, get a reference to BluetoothAdapter through
         // BluetoothManager.
         if (mBluetoothManager == null) {
@@ -283,7 +311,7 @@ public class BluetoothLeService extends Service {
         }
 
         // Try to establish a connection to previously saved device
-        preferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file), Context.MODE_PRIVATE);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String address = preferences.getString(getString(R.string.preference_device_address), null);
         if(address != null){
             connect(address);

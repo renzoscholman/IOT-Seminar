@@ -6,7 +6,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,44 +37,37 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
     protected List<HeartRate> chart_hrs = null;
     protected List<ECG> chart_ecg = null;
 
+    Thread mUpdateStartTimeThread = null;
+
     AppDatabase db;
 
     final Observer<List<ECG>> ecgObserver = new Observer<List<ECG>>() {
         @Override
         public void onChanged(@Nullable List<ECG> ecgs) {
-            chart_ecg = ecgs;
-
-
-            if(chart_ecg == null || chart_ecg.size() == 0){
+            if(ecgs == null || ecgs.size() == 0){
                 return;
             }
 
+            chart_ecg = ecgs;
             fillECGData();
-
-            // redraw
-            mChart.invalidate();
         }
     };
 
     final Observer<List<HeartRate>> hrObserver = new Observer<List<HeartRate>>() {
         @Override
         public void onChanged(@Nullable List<HeartRate> hrs) {
-            chart_hrs = hrs;
-
-
-            if(chart_hrs == null || chart_hrs.size() == 0){
+            if(hrs == null || hrs.size() == 0){
                 return;
             }
 
+            chart_hrs = hrs;
             fillHRData();
-
-            // redraw
-            mChart.invalidate();
         }
     };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        checkPreferences();
         db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "heart-rate-storage")
                 .fallbackToDestructiveMigration()
                 .build();
@@ -87,36 +83,82 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+        getSupportActionBar().setTitle(R.string.title_devices);
+        setupChart();
+    }
 
-        if (mDeviceAddress != null) {
-            Toast.makeText(this, "Started app, device is set: " + mDeviceAddress, Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Started app, no device set", Toast.LENGTH_SHORT).show();
+    private void checkPreferences() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        if(!preferences.getBoolean("pref_finished", false)){
+            Toast.makeText(this, R.string.notice_preferences, Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, PreferenceActivity.class));
+            finish();
         }
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getSupportActionBar().setTitle(R.string.title_devices);
+        boolean hasBLE = getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
+        if(hasBLE){
+            if(preferences.getString("pref_device_address", null) == null){
+                Toast.makeText(this, R.string.notice_hr_monitor, Toast.LENGTH_LONG).show();
+                startActivity(new Intent(this, DeviceScanActivity.class));
+                finish();
+            }
+        } else {
+            Toast.makeText(this, R.string.notice_ble_unsupported, Toast.LENGTH_LONG).show();
+        }
+    }
 
-
+    private void setupChart() {
         if(mChart == null){
             showSeconds = 10;
             chartHelper = new ChartHelper(this);
-            mChart = chartHelper.setupChart(R.id.chart1);
+            mChart = chartHelper.setupChart(R.id.chart1, true);
             chartHelper.setupAxis(showSeconds);
             chartHelper.setupSeekBars(showSeconds);
             chartHelper.setupLegend();
+
+            mUpdateStartTimeThread = new Thread() {
+
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(1000);
+                        float frameRate = 60f;
+                        float sleepMillis = 1000f/frameRate;
+                        while (!mUpdateStartTimeThread.isInterrupted()) {
+                            Thread.sleep((long) sleepMillis);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    long length = showSeconds * 1000;
+                                    long currentTime = System.currentTimeMillis();
+                                    long start = currentTime - length;
+                                    chartHelper.setStartMillis(start);
+                                    mChart.invalidate();
+                                }
+                            });
+                        }
+                    } catch (InterruptedException e) {
+                    }
+                }
+            };
+
+            mUpdateStartTimeThread.start();
         }
     }
 
     @Override
     protected void onDestroy() {
+        if(mUpdateStartTimeThread != null){
+            mUpdateStartTimeThread.stop();
+        }
         super.onDestroy();
         db.close();
     }
 
+
+
     public void refreshView(){
-        long length = showSeconds * 1000 + 5000;
+        long length = showSeconds * 1000;
         long currentTime = System.currentTimeMillis();
         long start = currentTime - length;
 
@@ -151,6 +193,9 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         if (item.getItemId() == R.id.menu_history_activity) {
             startActivity(new Intent(this, ActivityHistoryActivity.class));
         }
+        if (item.getItemId() == R.id.menu_preferences) {
+            startActivity(new Intent(this, PreferenceActivity.class));
+        }
         if (item.getItemId() == R.id.menu_enable_ecg) {
             use_ecg = !use_ecg;
             if(use_ecg){
@@ -182,6 +227,7 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         } else {
             if(chart_hrs.size() != 0) startMillis = chart_hrs.get(0).timestamp;
         }
+        //chartHelper.setStartMillis(startMillis);
     }
 
     private void fillHRData(){
@@ -196,6 +242,9 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
 
         updateStartTime();
         chartHelper.setHRData(values);
+
+        // redraw
+        mChart.invalidate();
     }
 
     private void fillECGData(){
@@ -210,6 +259,9 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
 
         updateStartTime();
         chartHelper.setECGData(values);
+
+        // redraw
+        mChart.invalidate();
     }
 
     @Override

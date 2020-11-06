@@ -1,17 +1,15 @@
 package com.tudelft.iots.ecg.classes.charts;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
-import android.graphics.Paint;
 import android.graphics.Shader;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.PaintDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -28,16 +26,13 @@ import com.github.mikephil.charting.formatter.IFillFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.model.GradientColor;
 import com.github.mikephil.charting.utils.Utils;
 import com.tudelft.iots.ecg.R;
-import com.tudelft.iots.ecg.classes.HeartRateZones;
 import com.tudelft.iots.ecg.classes.MyMarkerView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class ChartHelper {
@@ -46,17 +41,25 @@ public class ChartHelper {
 
     private AppCompatActivity mContext;
 
+    private boolean mRealtime = false;
+    private long mStartTime = -1;
+
     private LineChart mChart = null;
     private SeekBar seekBarX;
     private TextView tvX;
 
     protected Typeface tfRegular;
 
-    private long startMillis = System.currentTimeMillis();
+    private long mStartMillis = System.currentTimeMillis();
 
     public ChartHelper(AppCompatActivity context){
         mContext = context;
         tfRegular = Typeface.createFromAsset(context.getAssets(), "OpenSans-Regular.ttf");
+    }
+
+    public LineChart setupChart(@IdRes int id, boolean realTime){
+        mRealtime = realTime;
+        return setupChart(id);
     }
 
     public LineChart setupChart(@IdRes int id){
@@ -124,9 +127,30 @@ public class ChartHelper {
 
         if(showSeconds > 0){
             XAxis xAxis = mChart.getXAxis();
-            float min = Math.max(0, xAxis.getAxisMaximum() - showSeconds * 1000.0f);
-            xAxis.setAxisMinimum(min);
+            if(mRealtime){
+                xAxis.setAxisMinimum(0f);
+                xAxis.setAxisMaximum(showSeconds * 1000.0f);
+            } else {
+                float min = Math.max(0, xAxis.getAxisMaximum() - showSeconds * 1000.0f);
+                xAxis.setAxisMinimum(min);
+            }
         }
+    }
+
+    public void setStartMillis(long startMillis){
+        mStartMillis = startMillis;
+        XAxis xAxis = mChart.getXAxis();
+
+        xAxis.setValueFormatter(new ValueFormatter() {
+
+            private final SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm:ss", Locale.ENGLISH);
+
+            @Override
+            public String getAxisLabel(float value, AxisBase axis) {
+                long time = (long)value;
+                return mFormat.format(new Date(time + mStartMillis));
+            }
+        });
     }
 
     public void setupAxis(int showSeconds) {
@@ -142,7 +166,7 @@ public class ChartHelper {
             @Override
             public String getAxisLabel(float value, AxisBase axis) {
                 long time = (long)value;
-                return mFormat.format(new Date(time + startMillis));
+                return mFormat.format(new Date(time + mStartMillis));
             }
         });
 

@@ -1,18 +1,16 @@
 package com.tudelft.iots.ecg;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 public abstract class ServiceActivity extends AppCompatActivity {
     protected static String TAG = "ServiceActivity";
@@ -73,7 +71,7 @@ public abstract class ServiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if(savedInstanceState == null){
-            SharedPreferences preferences = getApplicationContext().getSharedPreferences(getString(R.string.preference_file), Context.MODE_PRIVATE);
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
             mDeviceAddress = preferences.getString(getString(R.string.preference_device_address), null);
 
             Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);

@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.tudelft.iots.ecg.classes.ActivityListAdapter;
 import com.tudelft.iots.ecg.database.AppDatabase;
@@ -28,18 +30,19 @@ public class ActivityHistoryActivity extends AppCompatActivity implements Adapte
     final Observer<List<Activity>> activityObserver = new Observer<List<Activity>>() {
         @Override
         public void onChanged(@Nullable List<Activity> activities) {
-            mActivities = activities;
-
-
-            if(mActivities == null || mActivities.size() == 0){
-                return;
-//                displayNoActivityFoundError();
-//                finish();
+            if(activities == null || activities.size() == 0){
+                displayNoActivityFoundError();
+                finish();
             }
 
+            mActivities = activities;
             fillActivities();
         }
     };
+
+    private void displayNoActivityFoundError() {
+        Toast.makeText(this, R.string.notice_no_activity_history, Toast.LENGTH_LONG).show();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
