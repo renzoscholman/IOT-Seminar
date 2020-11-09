@@ -149,7 +149,7 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
     @Override
     protected void onDestroy() {
         if(mUpdateStartTimeThread != null){
-            mUpdateStartTimeThread.stop();
+            mUpdateStartTimeThread.interrupt();
         }
         super.onDestroy();
         db.close();
