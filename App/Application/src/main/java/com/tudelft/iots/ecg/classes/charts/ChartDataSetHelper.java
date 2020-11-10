@@ -16,8 +16,8 @@ public class ChartDataSetHelper {
         set1.setDrawIcons(false);
 
         // black lines and points
-        set1.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
-        set1.setCubicIntensity(0.2f);
+        //set1.setMode(LineDataSet.Mode.HORIZONTAL_BEZIER);
+        //set1.setCubicIntensity(0.2f);
         set1.setColor(Color.BLACK);
         set1.setCircleColor(Color.BLACK);
 

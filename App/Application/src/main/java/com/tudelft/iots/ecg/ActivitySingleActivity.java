@@ -126,9 +126,7 @@ public class ActivitySingleActivity extends AppCompatActivity {
 
         mAge = 25;
         zones = new HeartRateZones(mAge).getZones();
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "heart-rate-storage")
-                .fallbackToDestructiveMigration()
-                .build();
+        db = AppDatabase.getDatabase(this);
         db.activityDao().getActivityById(mActivityID).observe(this, activityObserver);
 
         mTfRegular = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
@@ -144,7 +142,6 @@ public class ActivitySingleActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        db.close();
     }
 
     private void retrieveHrEcgData(){

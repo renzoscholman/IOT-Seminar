@@ -51,16 +51,12 @@ public class ActivityHistoryActivity extends AppCompatActivity implements Adapte
         setTitle(R.string.title_history);
         setContentView(R.layout.activity_history_overview);
 
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "heart-rate-storage")
-                .fallbackToDestructiveMigration()
-                .build();
+        db = AppDatabase.getDatabase(this);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        db.close();
     }
 
     @Override

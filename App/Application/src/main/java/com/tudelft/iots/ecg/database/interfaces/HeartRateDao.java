@@ -23,6 +23,9 @@ public interface HeartRateDao {
     @Query("SELECT * FROM heart_rates WHERE timestamp >= :startTime AND timestamp <= :endTime")
     LiveData<List<HeartRate>> getHeartRatesBetween(long startTime, long endTime);
 
+    @Query("SELECT * FROM heart_rates WHERE timestamp >= :startTime")
+    LiveData<List<HeartRate>> getHeartRatesAfter(long startTime);
+
     @Query("SELECT * FROM heart_rates WHERE timestamp >= :startTime AND timestamp <= :endTime")
     List<HeartRate> getHeartRatesAtTime(long startTime, long endTime);
 

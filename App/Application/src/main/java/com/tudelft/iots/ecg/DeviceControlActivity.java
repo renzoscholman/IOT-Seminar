@@ -22,6 +22,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -102,7 +103,13 @@ public class DeviceControlActivity extends ServiceActivity {
         // Pre load device name and address
         final Intent intent = getIntent();
         mDeviceName = intent.getStringExtra(EXTRAS_DEVICE_NAME);
-        mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        super.mDeviceAddress = intent.getStringExtra(EXTRAS_DEVICE_ADDRESS);
+        if(super.mDeviceAddress == null){
+            Log.d(TAG, "Got null address, exiting activity");
+            finish();
+        } else {
+            Log.d(TAG, "Got address: "+super.mDeviceAddress);
+        }
 
         super.mGattUpdateReceiver = new BroadcastReceiver() {
             @Override
@@ -126,20 +133,22 @@ public class DeviceControlActivity extends ServiceActivity {
             }
         };
 
+        super.forceReconnect = true;
+
         // Create super (NEEDS the address)
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.gatt_services_characteristics);
 
         // Sets up UI references.
-        ((TextView) findViewById(R.id.device_address)).setText(mDeviceAddress);
+        ((TextView) findViewById(R.id.device_address)).setText(super.mDeviceAddress);
         mGattServicesList = (ExpandableListView) findViewById(R.id.gatt_services_list);
         mGattServicesList.setOnChildClickListener(servicesListClickListner);
         mConnectionState = (TextView) findViewById(R.id.connection_state);
         mDataField = (TextView) findViewById(R.id.data_value);
 
-        getActionBar().setTitle(mDeviceName);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(mDeviceName);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

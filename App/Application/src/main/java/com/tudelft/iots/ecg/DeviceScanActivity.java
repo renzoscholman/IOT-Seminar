@@ -21,18 +21,23 @@ import android.app.Activity;
 import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanResult;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,15 +56,33 @@ import java.util.List;
  */
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class DeviceScanActivity extends ListActivity {
+    private static String TAG = DeviceScanActivity.class.getSimpleName();
+
     private LeDeviceListAdapter mLeDeviceListAdapter;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothLeScanner mBluetoothLeScanner;
+    private BluetoothLeService mBluetoothLeService;
+    private BluetoothManager mBluetoothManager;
+    protected boolean serviceConnected = false;
     private boolean mScanning;
     private Handler mHandler;
 
     private static final int REQUEST_ENABLE_BT = 1;
     // Stops scanning after 30 seconds.
     private static final long SCAN_PERIOD = 30000;
+
+    // Code to manage Service lifecycle.
+    protected final ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder service) {
+            mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mBluetoothLeService = null;
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,9 +105,8 @@ public class DeviceScanActivity extends ListActivity {
 
         // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
         // BluetoothAdapter through BluetoothManager.
-        final BluetoothManager bluetoothManager =
-                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
-        mBluetoothAdapter = bluetoothManager.getAdapter();
+        mBluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
 
         // Checks if Bluetooth is supported on the device.
         if (mBluetoothAdapter == null) {
@@ -105,6 +127,17 @@ public class DeviceScanActivity extends ListActivity {
             finish();
         }
 
+        Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
+        serviceConnected = bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(serviceConnected){
+            unbindService(mServiceConnection);
+        }
+        mBluetoothLeService = null;
     }
 
     @Override
@@ -229,6 +262,10 @@ public class DeviceScanActivity extends ListActivity {
 
             mScanning = true;
             mBluetoothLeScanner.startScan(mLeScanCallback);
+            List<BluetoothDevice> devices = mBluetoothManager.getConnectedDevices(BluetoothGatt.GATT);
+            for(BluetoothDevice device : devices){
+                mLeDeviceListAdapter.addDevice(device);
+            }
         } else {
             mScanning = false;
             mBluetoothLeScanner.stopScan(mLeScanCallback);

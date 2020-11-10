@@ -220,6 +220,18 @@ public class ChartHelper {
         // axis range
         yAxis.setAxisMaximum(upper);
         yAxis.setAxisMinimum(lower);
+
+        int showSeconds = seekBarX != null ? seekBarX.getProgress() : -1;
+        if(showSeconds > 0){
+            XAxis xAxis = mChart.getXAxis();
+            if(mRealtime){
+                xAxis.setAxisMinimum(0f);
+                xAxis.setAxisMaximum(showSeconds * 1000.0f);
+            } else {
+                float min = Math.max(0, xAxis.getAxisMaximum() - showSeconds * 1000.0f);
+                xAxis.setAxisMinimum(min);
+            }
+        }
     }
 
 

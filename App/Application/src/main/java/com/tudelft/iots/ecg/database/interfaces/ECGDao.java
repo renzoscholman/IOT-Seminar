@@ -23,6 +23,9 @@ public interface ECGDao {
     @Query("SELECT * FROM ecgs WHERE timestamp >= :start and timestamp <= :end")
     LiveData<List<ECG>> getECGsBetween(long start, long end);
 
+    @Query("SELECT * FROM ecgs WHERE timestamp >= :start")
+    LiveData<List<ECG>> getECGsAfter(long start);
+
     @Query("SELECT COUNT(*) from ecgs")
     int count();
 
