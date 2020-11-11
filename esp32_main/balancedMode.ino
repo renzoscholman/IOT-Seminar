@@ -4,7 +4,8 @@ void readSensorForBalancedMode() {      // read the sensor for 10 secs at 100Hz 
   TickType_t xLastWakeTime;
   xLastWakeTime = xTaskGetTickCount();
 
-  for (int i = 0; i < 1000; i++) {
+  int i = 0; 
+  while (true) {
     //      Serial.print(millis() - startTime);
     //      Serial.println(" ms");
     //      startTime = millis();
@@ -17,15 +18,17 @@ void readSensorForBalancedMode() {      // read the sensor for 10 secs at 100Hz 
     //      Serial.println(digitalRead(LO_PlusPin));
     //      Serial.print("-");
     arrForHR[i] = sensorValue;
-    if (i == 999) {
+
+    i++;
+
+    if (i == 1000) {
       memcpy(buffArrForHR, arrForHR, 2000);       // because arrForHR is uint16_t
       ecgBufferReady = true;
       Serial.println("ecg Buffer is ready");
-//      for(int j = 0; j < 1000; j++){
-//      Serial.print(arrForHR[i]);
-//      Serial.print(' ');
-//      }
-//      Serial.println();
+      for (int j = 0; j < 1000-WINDOW; j++) {   // slide the window forward
+        arrForHR[j] = arrForHR[j+WINDOW]  ;
+      } 
+      i = 1000 - WINDOW;
     }
     /* 100 ms is converted into ticks and the period starts LastWakeTime.
        LastWakeTIme is updated automatically after each delayUntil call*/

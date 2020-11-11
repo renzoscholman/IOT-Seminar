@@ -44,15 +44,7 @@ void readSensorForHighPowerMode() {
         seqNr = 0;
       } else {
         seqNr++;
-      }
-
-//      Serial.println();
-//      for (int k = 0; k < 20; k++) {
-//        Serial.print(arrForTX[k], HEX);
-//        Serial.print("-");
-//      }
-//      Serial.println();
-
+      } 
       i = 0;
       incrementBy2 = false;
 
@@ -62,17 +54,15 @@ void readSensorForHighPowerMode() {
     }
     arrForHR[j] = sensorValue;
     j++;
-    if (j == 1000) {
-      j = 0;
+    if (j == 1000) { 
       memcpy(buffArrForHR, arrForHR, 2000);       // because arrForHR is uint16_t
       ecgBufferReady = true;
       Serial.println("ecg Buffer is ready");
-//      Serial.println();
-//      for (int k = 0; k < 1000; k++) {
-//        Serial.print(arrForHR[k], HEX);
-//        Serial.print("-");
-//      }
-//      Serial.println();
+      
+      for (int k = 0; k < 1000-WINDOW; k++) {   // slide the window forward
+        arrForHR[k] = arrForHR[k+WINDOW]  ;
+      } 
+      j = 1000 - WINDOW;
     }
 
     if (mode != highPower) {

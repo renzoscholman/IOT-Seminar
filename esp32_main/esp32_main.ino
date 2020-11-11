@@ -33,6 +33,7 @@ uint16_t buffArrForHR[1000] = {0};
 float heartRate = 0;
 const int sensorPin = 36;
 const long TIME_TO_SLEEP = 60;   // in sec
+const int WINDOW = 200;
 int LO_MinPin = 25;
 int LO_PlusPin = 26;
 unsigned long currTime = 0;
