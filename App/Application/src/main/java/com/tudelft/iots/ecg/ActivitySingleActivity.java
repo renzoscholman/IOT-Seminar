@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -123,6 +124,7 @@ public class ActivitySingleActivity extends AppCompatActivity {
         }
 
         getSupportActionBar().setTitle(R.string.title_tracked);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mAge = 25;
         zones = new HeartRateZones(mAge).getZones();
@@ -142,6 +144,14 @@ public class ActivitySingleActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return true;
     }
 
     private void retrieveHrEcgData(){
@@ -202,34 +212,6 @@ public class ActivitySingleActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.unknown_activity, Toast.LENGTH_SHORT).show();
     }
 
-    private void setLimits(float upper, float lower){
-        LimitLine ll1 = new LimitLine(upper, "Upper Limit");
-        ll1.setLineWidth(4f);
-        ll1.enableDashedLine(10f, 10f, 0f);
-        ll1.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_TOP);
-        ll1.setTextSize(10f);
-        ll1.setTypeface(mTfRegular);
-
-        LimitLine ll2 = new LimitLine(lower, "Lower Limit");
-        ll2.setLineWidth(4f);
-        ll2.enableDashedLine(10f, 10f, 0f);
-        ll2.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_BOTTOM);
-        ll2.setTextSize(10f);
-        ll2.setTypeface(mTfRegular);
-
-        YAxis yAxis = mChart.getAxisLeft();
-        yAxis.removeAllLimitLines();
-        yAxis.setDrawLimitLinesBehindData(true);
-        yAxis.addLimitLine(ll1);
-        yAxis.addLimitLine(ll2);
-
-        // axis range
-        upper = Math.max(130.0f, upper);
-        lower = Math.min(50.0f, lower);
-        yAxis.setAxisMaximum(upper + 10f);
-        yAxis.setAxisMinimum(lower - 10f);
-    }
-
     private void updateChartXAxis() {
         XAxis xAxis = mChart.getXAxis();
 
@@ -248,16 +230,6 @@ public class ActivitySingleActivity extends AppCompatActivity {
         xAxis.setAxisMaximum(mActivity.timestamp_end - mActivity.timestamp_start);
     }
 
-    protected void setECGLimits(float upper, float lower){
-        YAxis yAxis = mChart.getAxisRight();
-        upper = Math.max(4096.0f, upper) + 10.0f;
-        lower = Math.min(1536.0f, lower) - 10.0f;
-
-        // axis range
-        yAxis.setAxisMaximum(upper);
-        yAxis.setAxisMinimum(lower);
-    }
-
     private void fillHRData() {
         ArrayList<Entry> values = new ArrayList<>();
         for (int i = 0; i < mHRs.size(); i++) {
@@ -267,36 +239,6 @@ public class ActivitySingleActivity extends AppCompatActivity {
         }
 
         chartHelper.setHRData(values);
-        return;
-
-//        LineData data = mChart.getData();
-//        LineDataSet set1;
-//
-//        float max = -1.0f, min = 4096.0f;
-//        for(Entry entry : values){
-//            if(entry.getY() < min) min = entry.getY();
-//            if(entry.getY() > max) max = entry.getY();
-//        }
-//        setLimits(max, min);
-//
-//        if(data != null){
-//            set1 = (LineDataSet) mChart.getData().getDataSetByLabel("Heart Rate", false);
-//            if(set1 != null){
-//                set1.setValues(values);
-//                set1.notifyDataSetChanged();
-//                mChart.getData().notifyDataChanged();
-//            } else {
-//                set1 = ChartDataSetHelper.getHRDataSet(values);
-//                data.addDataSet(set1);
-//            }
-//        } else {
-//            set1 = ChartDataSetHelper.getHRDataSet(values);
-//            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-//            dataSets.add(set1); // add the data sets
-//            data = new LineData(dataSets);
-//            mChart.setData(data);
-//        }
-//        mChart.notifyDataSetChanged();
     }
 
     private void fillECGData() {
@@ -308,35 +250,5 @@ public class ActivitySingleActivity extends AppCompatActivity {
         }
 
         chartHelper.setECGData(values);
-        return;
-
-//        LineData data = mChart.getData();
-//        LineDataSet set1;
-//
-//        float max = -1.0f, min = 4096.0f;
-//        for(Entry entry : values){
-//            if(entry.getY() < min) min = entry.getY();
-//            if(entry.getY() > max) max = entry.getY();
-//        }
-//        setECGLimits(max, min);
-//
-//        if(data != null){
-//            set1 = (LineDataSet) mChart.getData().getDataSetByLabel("ECG", false);
-//            if(set1 != null){
-//                set1.setValues(values);
-//                set1.notifyDataSetChanged();
-//                mChart.getData().notifyDataChanged();
-//            } else {
-//                set1 = ChartDataSetHelper.getECGDataSet(values);
-//                data.addDataSet(set1);
-//            }
-//        } else {
-//            set1 = ChartDataSetHelper.getECGDataSet(values);
-//            ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-//            dataSets.add(set1); // add the data sets
-//            data = new LineData(dataSets);
-//            mChart.setData(data);
-//        }
-//        mChart.notifyDataSetChanged();
     }
 }

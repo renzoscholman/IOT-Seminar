@@ -50,6 +50,7 @@ public class ActivityHistoryActivity extends AppCompatActivity implements Adapte
 
         setTitle(R.string.title_history);
         setContentView(R.layout.activity_history_overview);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         db = AppDatabase.getDatabase(this);
     }
@@ -87,14 +88,8 @@ public class ActivityHistoryActivity extends AppCompatActivity implements Adapte
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_home) {
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         }
         return true;

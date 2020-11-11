@@ -15,15 +15,6 @@
 -->
 <menu xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_refresh"
-          android:checkable="false"
-          android:orderInCategory="1"
-          android:showAsAction="ifRoom"/>
-    <item
-        android:id="@+id/menu_home"
-        android:orderInCategory="100"
-        android:showAsAction="ifRoom|withText"
-        android:title="@string/menu_home" />
     <item
         android:id="@+id/menu_stop"
         android:orderInCategory="101"

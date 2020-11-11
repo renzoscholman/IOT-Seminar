@@ -108,6 +108,7 @@ public class ActivityTrackingActivity extends ServiceActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().setTitle(R.string.title_tracking);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         tfRegular = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
 
         setTitle("Activity Tracking");
@@ -298,14 +299,8 @@ public class ActivityTrackingActivity extends ServiceActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_home) {
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         }
         return true;

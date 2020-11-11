@@ -347,6 +347,7 @@ public class BluetoothLeService extends Service {
 
     @Override
     public void onDestroy() {
+        disconnect();
         close();
         super.onDestroy();
     }
@@ -468,14 +469,7 @@ public class BluetoothLeService extends Service {
     }
 
     public boolean isConnectedTo(String address){
-        return mBluetoothDeviceAddress != null && address.equals(mBluetoothDeviceAddress) && mBluetoothGatt != null;
-    }
-
-    public BluetoothDevice getDevice(){
-        if (mConnectionState == STATE_CONNECTED){
-            return mBluetoothGatt.getDevice();
-        }
-        return null;
+        return mConnectionState != STATE_DISCONNECTED && address.equals(mBluetoothDeviceAddress) && mBluetoothGatt != null;
     }
 
     /**
