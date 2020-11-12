@@ -128,7 +128,7 @@ void removeOutliers(float arr[], int arrLen, float c ) {
   float std = 0.0;
 
   for (int i = 0; i < arrLen; i++) {
-    if (arr[i] < 40 || arr[i] > 200) {
+    if (arr[i] < 40 || arr[i] > 250) {
       arr[i] = -1;
       counter ++;
     }
