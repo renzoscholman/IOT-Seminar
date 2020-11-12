@@ -39,7 +39,7 @@ void readSensorForHighPowerMode() {
       arrForTX[i] = (uint8_t)(arrForTX[i] | (uint8_t) seqNr);
       memcpy(buffArrForTX, arrForTX, 20);
       bufferReady = true;
-      Serial.println(" Buffer is ready");
+//      Serial.println(" Buffer is ready");
       if (seqNr == 15) {              // so it can only occupy the last remaining 4 bits
         seqNr = 0;
       } else {
@@ -54,15 +54,15 @@ void readSensorForHighPowerMode() {
     }
     arrForHR[j] = sensorValue;
     j++;
-    if (j == 1000) { 
-      memcpy(buffArrForHR, arrForHR, 2000);       // because arrForHR is uint16_t
+    if (j == ECG_DATA_ARR_LEN) { 
+      memcpy(buffArrForHR, arrForHR, ECG_DATA_ARR_LEN*2);       // because arrForHR is uint16_t
       ecgBufferReady = true;
-      Serial.println("ecg Buffer is ready");
+//      Serial.println("ecg Buffer is ready");
       
-      for (int k = 0; k < 1000-WINDOW; k++) {   // slide the window forward
+      for (int k = 0; k < ECG_DATA_ARR_LEN-WINDOW; k++) {   // slide the window forward
         arrForHR[k] = arrForHR[k+WINDOW]  ;
       } 
-      j = 1000 - WINDOW;
+      j = ECG_DATA_ARR_LEN - WINDOW;
     }
 
     if (mode != highPower) {

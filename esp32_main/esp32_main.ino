@@ -22,18 +22,21 @@ BLEServer* pServer = NULL;
 //BLEServer* pHRServer = NULL;
 BLECharacteristic* pCharacteristic = NULL;
 BLECharacteristic* pHRCharacteristic = NULL;
+
+
+const long TIME_TO_SLEEP = 60;   // in sec
+const int ECG_DATA_ARR_LEN = 1000;
+const int WINDOW = 200;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 bool bufferReady = false;
 bool ecgBufferReady = false;
 uint8_t arrForTX[20] = {0};
 uint8_t buffArrForTX[20] = {0};
-uint16_t arrForHR[1000] = {0};
-uint16_t buffArrForHR[1000] = {0};
+uint16_t arrForHR[ECG_DATA_ARR_LEN] = {0};
+uint16_t buffArrForHR[ECG_DATA_ARR_LEN] = {0};
 float heartRate = 0;
 const int sensorPin = 36;
-const long TIME_TO_SLEEP = 60;   // in sec
-const int WINDOW = 200;
 int LO_MinPin = 25;
 int LO_PlusPin = 26;
 unsigned long currTime = 0;

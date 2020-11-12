@@ -1,9 +1,9 @@
 
 float calcHR (uint16_t rawDataArr[]) {
   int order = 3;
-    int threshold = 7268416;
-//  int threshold = 2000000;
-  int filteredPeaksArrLen = 1000 - 2 * order;
+  int threshold = 1852321;
+  //  int threshold = 2000000;
+  int filteredPeaksArrLen = ECG_DATA_ARR_LEN - 2 * order;
   int filteredPeaksArr[filteredPeaksArrLen] = {0};
   int noOfPeaks = 0;
   float* instHRarr;
@@ -18,6 +18,9 @@ float calcHR (uint16_t rawDataArr[]) {
       noOfPeaks++;
     }
   }
+
+//  Serial.print("No of peaks ");
+//  Serial.println(noOfPeaks);
 
   if (noOfPeaks == 0) {
     return 0;
@@ -44,17 +47,62 @@ float calcHR (uint16_t rawDataArr[]) {
 
 void filterPeaks(uint16_t srcArr[], int order, int threshold, int destArr[]) {
   int diff = 0;
+  int window [6] = {0};
+  int counter = 0;
+  int argMaxInWindow = 0;
 
-  for (int i = (0 + order); i < (1000 - order); i++) {
+  for (int i = (0 + order); i < (ECG_DATA_ARR_LEN - order); i++) {
     diff = srcArr[i - order] + srcArr[i + order] - 2 * srcArr[i];
     if (diff < 0) {
       if ((diff * diff) > threshold) {
-        destArr[i] = 1;
+        destArr[i - order] = 1;
+
+//        Serial.print("Unfiltered peak at ");
+//        Serial.println(i - order);
+      } else {
+        destArr[i - order] = 0;
       }
     } else {
-      destArr[i] = 0;
+      destArr[i - order] = 0;
     }
   }
+  // filter out the duplicate peaks
+  int i = 0;
+  while (i < (ECG_DATA_ARR_LEN - 2 * order)) {
+
+    if (destArr[i] == 1) {
+      counter = 0;
+      window[counter] = i;
+      argMaxInWindow = counter;
+      counter++;
+      for (int j = 1; j < 6; j++) {
+        if ((i + j) < (ECG_DATA_ARR_LEN - 2 * order)) {
+          if ((destArr[i + j] == 1)) {
+            window[counter] = i + j;
+            if (srcArr[window[counter] + order] > srcArr[window[argMaxInWindow] + order]) {
+              argMaxInWindow = counter;
+            }
+            counter++;
+          }
+        } else {
+          break;
+        }
+      }
+      for (int j = 0 ; j < counter; j++) {
+        if (j == argMaxInWindow) {
+          destArr[i + j] = 1;
+//          Serial.print("Filtered peak at ");
+//          Serial.println(i + j);
+        } else {
+          destArr[i + j] = 0;
+        }
+      }
+      i = i + counter;
+    } else {
+      i++;
+    }
+  }
+
   return ;
 }
 
@@ -68,6 +116,44 @@ void calcInstHR (int srcArr[], int srcArrLen, float destArr[]) {
       }
       j++;
       prevI = i;
+    }
+  }
+  return;
+}
+
+void removeOutliers(float arr[], int arrLen, float c ) {
+
+  int counter = 0;
+  float meanVal = 0.0;
+  float std = 0.0;
+
+  for (int i = 0; i < arrLen; i++) {
+    if (arr[i] < 40 || arr[i] > 200) {
+      arr[i] = -1;
+      counter ++;
+    }
+  }
+
+  //calculate mean
+  for (int i = 0; i < arrLen; i++) {
+    if (arr[i] != -1) {
+      meanVal = meanVal + arr[i];
+    }
+  }
+  meanVal = meanVal / (arrLen - counter);
+
+  // calculated standard deviation
+  for (int i = 0; i < arrLen; i++) {
+    if (arr[i] != -1) {
+      std = std + pow((meanVal - arr[i]), 2);
+    }
+  }
+  std = std / (arrLen - counter);
+  std = sqrt(std);
+
+  for (int i = 0; i < arrLen; i++) {
+    if (arr[i] > (meanVal + c * std)) {
+      arr[i] = -1;
     }
   }
   return;
@@ -90,28 +176,4 @@ float calcMedianHR (float arr[], int arrLen) {
     }
   }
   return (arr[nrOfOutliers + (arrLen - nrOfOutliers) / 2]);
-}
-
-void removeOutliers(float arr[], int arrLen, float c ) {
-  //calculate mean
-  float meanVal = 0.0;
-  float std = 0.0;
-  for (int i = 0; i < arrLen; i++) {
-    meanVal = meanVal + arr[i];
-  }
-  meanVal = meanVal / arrLen;
-
-  // calculated standard deviation
-  for (int i = 0; i < arrLen; i++) {
-    std = std + pow((meanVal - arr[i]), 2);
-  }
-  std = std / arrLen;
-  std = sqrt(std);
-
-  for (int i = 0; i < arrLen; i++) {
-    if (arr[i] > (meanVal + c * std)) {
-      arr[i] = -1;
-    }
-  }
-  return;
 }

@@ -111,12 +111,12 @@ void TaskTransmit(void *pvParameters)  // This is a task.
   for (;;)
   {
     //    deviceConnected = true;     // only for HR calculation from saved sensorData
-    //    bufferReady= true;        // only for HR calculation from saved sensorData
+    //    ecgBufferReady = true;       // only for HR calculation from saved sensorData
     // notify changed value
-    if (deviceConnected) { 
+    if (deviceConnected) {
       if (mode == highPower) {
         if (bufferReady) {
-          prevTime = millis(); 
+          prevTime = millis();
           bufferReady = false;
           Serial.println(" Buffer is read");
           pCharacteristic->setValue((uint8_t*)&buffArrForTX, 20); // 20 bytes
@@ -126,19 +126,19 @@ void TaskTransmit(void *pvParameters)  // This is a task.
           //        delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
           vTaskDelay(pdMS_TO_TICKS(3));
           digitalWrite(LED_BUILTIN, LOW);
-          
-        Serial.print("Time taken for ecg data transmission ");
-        Serial.println(millis()-prevTime);
+
+          Serial.print("Time taken for ecg data transmission ");
+          Serial.println(millis() - prevTime);
         }
       }
-      
+
       if (ecgBufferReady) {
         prevTime = millis();
         ecgBufferReady = false;
         Serial.println("ecg Buffer is read");
-        
+
         heartRate = calcHR(buffArrForHR);
-        //        heartRate = calcHR(sensorData); // only for HR calculation from saved sensorData
+        //heartRate = calcHR(sensorData);         // only for HR calculation from saved sensorData
         currTime = millis();
         Serial.print("Timestamp : ") ;
         Serial.print(currTime);
@@ -161,7 +161,7 @@ void TaskTransmit(void *pvParameters)  // This is a task.
         vTaskDelay(pdMS_TO_TICKS(3));
         digitalWrite(LED_BUILTIN, LOW);
         Serial.print("Time taken for HR calc and transmission ");
-        Serial.println(millis()-prevTime);
+        Serial.println(millis() - prevTime);
       }
     }
     // disconnecting

@@ -2,14 +2,14 @@ void sendHRwithDelay() {
   TickType_t xLastWakeTime;
   xLastWakeTime = xTaskGetTickCount();
 
-  for (int i = 0; i < 1000; i++) {
+  for (int i = 0; i < ECG_DATA_ARR_LEN; i++) {
 
     uint16_t sensorValue = analogRead(sensorPin);   //sensor value has 12 bits
     arrForHR[i] = sensorValue;
     if (i == 999) {
-      memcpy(buffArrForHR, arrForHR, 2000);       // because arrForHR is uint16_t
+      memcpy(buffArrForHR, arrForHR, ECG_DATA_ARR_LEN*2);       // because arrForHR is uint16_t
       ecgBufferReady = true;
-      Serial.println("ecg Buffer is ready");
+//      Serial.println("ecg Buffer is ready");
     }
     if (mode != lowPower) {
       break;
