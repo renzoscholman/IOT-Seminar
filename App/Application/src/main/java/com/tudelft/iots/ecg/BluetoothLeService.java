@@ -40,10 +40,10 @@ import com.tudelft.iots.ecg.database.AppDatabase;
 import com.tudelft.iots.ecg.database.interfaces.HeartRateDao;
 import com.tudelft.iots.ecg.database.model.HeartRate;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-import org.eclipse.paho.client.mqttv3.IMqttToken;
-import org.eclipse.paho.client.mqttv3.MqttException;
+//import org.eclipse.paho.android.service.MqttAndroidClient;
+//import org.eclipse.paho.client.mqttv3.IMqttActionListener;
+//import org.eclipse.paho.client.mqttv3.IMqttToken;
+//import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.util.Arrays;
 import java.util.List;
@@ -64,7 +64,7 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
-    private MqttAndroidClient mMQTTClient;
+    //private MqttAndroidClient mMQTTClient;
     private boolean initialized = false;
 
     AppDatabase db;
@@ -238,7 +238,7 @@ public class BluetoothLeService extends Service {
                 .fallbackToDestructiveMigration()
                 .build();
 
-        startTime = db.insertDefaultValues();
+        //startTime = db.insertDefaultValues();
         return 0;
     }
 
@@ -267,32 +267,33 @@ public class BluetoothLeService extends Service {
     public boolean initialize() {
         if(initialized) return true;
         initialized = true;
+        initDB();
 
-        new Thread(new Runnable() {
-            public void run() {
-                threadedTestData();
-            }
-        }).start();
+//        new Thread(new Runnable() {
+//            public void run() {
+//                threadedTestData();
+//            }
+//        }).start();
 
 
-        mMQTTClient = new MqttAndroidClient(this.getApplicationContext(), "ADDRESS", "ID");
-        try{
-            Log.i("Connection", "Starting connection ");
-            IMqttToken token = mMQTTClient.connect();
-            token.setActionCallback(new IMqttActionListener() {
-                @Override
-                public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.i("Connection", "success ");
-                }
-
-                @Override
-                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.e("Connection", "Failed "+ Arrays.toString(exception.getStackTrace()));
-                }
-            });
-        } catch (MqttException error){
-            Log.e("Connection", "Error "+ Arrays.toString(error.getStackTrace()));
-        }
+//        mMQTTClient = new MqttAndroidClient(this.getApplicationContext(), "ADDRESS", "ID");
+//        try{
+//            Log.i("Connection", "Starting connection ");
+//            IMqttToken token = mMQTTClient.connect();
+//            token.setActionCallback(new IMqttActionListener() {
+//                @Override
+//                public void onSuccess(IMqttToken asyncActionToken) {
+//                    Log.i("Connection", "success ");
+//                }
+//
+//                @Override
+//                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
+//                    Log.e("Connection", "Failed "+ Arrays.toString(exception.getStackTrace()));
+//                }
+//            });
+//        } catch (MqttException error){
+//            Log.e("Connection", "Error "+ Arrays.toString(error.getStackTrace()));
+//        }
 
         // For API level 18 and above, get a reference to BluetoothAdapter through
         // BluetoothManager.
