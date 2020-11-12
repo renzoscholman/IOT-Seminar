@@ -3,8 +3,7 @@ void readSensorForBalancedMode() {      // read the sensor for 10 secs at 100Hz 
 
   TickType_t xLastWakeTime;
   xLastWakeTime = xTaskGetTickCount();
-
-  int i = 0; 
+ 
   while (true) {
     //      Serial.print(millis() - startTime);
     //      Serial.println(" ms");
@@ -17,18 +16,18 @@ void readSensorForBalancedMode() {      // read the sensor for 10 secs at 100Hz 
     //      Serial.print("LO+");
     //      Serial.println(digitalRead(LO_PlusPin));
     //      Serial.print("-");
-    arrForHR[i] = sensorValue;
+    arrForHR[globalIdx] = sensorValue;
 
-    i++;
+    globalIdx++;
 
-    if (i == ECG_DATA_ARR_LEN) {
+    if (globalIdx == ECG_DATA_ARR_LEN) {
       memcpy(buffArrForHR, arrForHR, ECG_DATA_ARR_LEN*2);       // because arrForHR is uint16_t
       ecgBufferReady = true;
 //      Serial.println("ecg Buffer is ready");
       for (int j = 0; j < ECG_DATA_ARR_LEN-WINDOW; j++) {   // slide the window forward
         arrForHR[j] = arrForHR[j+WINDOW]  ;
       } 
-      i = ECG_DATA_ARR_LEN - WINDOW;
+      globalIdx = ECG_DATA_ARR_LEN - WINDOW;
     }
     /* 100 ms is converted into ticks and the period starts LastWakeTime.
        LastWakeTIme is updated automatically after each delayUntil call*/

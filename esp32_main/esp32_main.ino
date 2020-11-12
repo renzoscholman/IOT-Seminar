@@ -25,8 +25,8 @@ BLECharacteristic* pHRCharacteristic = NULL;
 
 
 const long TIME_TO_SLEEP = 60;   // in sec
-const int ECG_DATA_ARR_LEN = 1000;
-const int WINDOW = 200;
+const int ECG_DATA_ARR_LEN = 500;
+const int WINDOW = 100;
 bool deviceConnected = false;
 bool oldDeviceConnected = false;
 bool bufferReady = false;
@@ -40,9 +40,10 @@ const int sensorPin = 36;
 int LO_MinPin = 25;
 int LO_PlusPin = 26;
 unsigned long currTime = 0;
+int globalIdx = 0;
 
 enum MODE {lowPower, balanced, highPower};
-MODE mode = highPower;
+MODE mode = balanced;
 
 
 // define tasks for FreeRTOS

@@ -70,16 +70,16 @@ void TaskTransmit(void *pvParameters)  // This is a task.
                       CHARACTERISTIC_UUID,
                       BLECharacteristic::PROPERTY_READ   |
                       BLECharacteristic::PROPERTY_WRITE  |
-                      //                      BLECharacteristic::PROPERTY_NOTIFY |
-                      BLECharacteristic::PROPERTY_INDICATE
+                      BLECharacteristic::PROPERTY_NOTIFY // |
+                      //                      BLECharacteristic::PROPERTY_INDICATE
                     );
 
   pHRCharacteristic = pHRService->createCharacteristic(
                         HR_CHARACTERISTIC_UUID,
                         BLECharacteristic::PROPERTY_READ   |
                         BLECharacteristic::PROPERTY_WRITE  |
-                        //                      BLECharacteristic::PROPERTY_NOTIFY |
-                        BLECharacteristic::PROPERTY_INDICATE
+                        BLECharacteristic::PROPERTY_NOTIFY // |
+                        //                        BLECharacteristic::PROPERTY_INDICATE
                       );
 
   // https://www.bluetooth.com/specifications/gatt/viewer?attributeXmlFile=org.bluetooth.descriptor.gatt.client_characteristic_configuration.xml
@@ -121,10 +121,11 @@ void TaskTransmit(void *pvParameters)  // This is a task.
           Serial.println(" Buffer is read");
           pCharacteristic->setValue((uint8_t*)&buffArrForTX, 20); // 20 bytes
           digitalWrite(LED_BUILTIN, HIGH);
-          pCharacteristic->indicate();
+//          pCharacteristic->indicate();
+          pCharacteristic->notify();
           //      Serial.println("indicated");
           //        delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
-          vTaskDelay(pdMS_TO_TICKS(3));
+          vTaskDelay(pdMS_TO_TICKS(10));
           digitalWrite(LED_BUILTIN, LOW);
 
           Serial.print("Time taken for ecg data transmission ");
@@ -147,6 +148,8 @@ void TaskTransmit(void *pvParameters)  // This is a task.
         Serial.print(" Heart Rate : ");
         Serial.print(heartRate);
         Serial.println("bpm");
+        Serial.print("Time taken for HR calc ");
+        Serial.println(millis() - prevTime);
 
         transmitData[4] = (uint8_t) heartRate;
         transmitData[3] = (uint8_t) currTime;
@@ -155,10 +158,11 @@ void TaskTransmit(void *pvParameters)  // This is a task.
         transmitData[0] = (uint8_t) (currTime >> 24);
         pHRCharacteristic->setValue((uint8_t*)&transmitData, 5);
         digitalWrite(LED_BUILTIN, HIGH);
-        pHRCharacteristic->indicate();
+        //        pHRCharacteristic->indicate();
+        pHRCharacteristic->notify();
         //      Serial.println("indicated");
         //        delay(3); // bluetooth stack will go into congestion, if too many packets are sent, in 6 hours test i was able to go as low as 3ms
-        vTaskDelay(pdMS_TO_TICKS(3));
+        vTaskDelay(pdMS_TO_TICKS(10));
         digitalWrite(LED_BUILTIN, LOW);
         Serial.print("Time taken for HR calc and transmission ");
         Serial.println(millis() - prevTime);

@@ -2,6 +2,7 @@ void sendHRwithDelay() {
   TickType_t xLastWakeTime;
   xLastWakeTime = xTaskGetTickCount();
 
+  globalIdx = 0;
   for (int i = 0; i < ECG_DATA_ARR_LEN; i++) {
 
     uint16_t sensorValue = analogRead(sensorPin);   //sensor value has 12 bits
