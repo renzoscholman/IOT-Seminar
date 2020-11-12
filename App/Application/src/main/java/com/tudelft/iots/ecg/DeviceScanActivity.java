@@ -18,7 +18,6 @@ package com.tudelft.iots.ecg;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.ListActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
@@ -38,21 +37,15 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tudelft.iots.ecg.classes.LeDeviceListAdapter;
+import com.tudelft.iots.ecg.classes.lists.LeDeviceListAdapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

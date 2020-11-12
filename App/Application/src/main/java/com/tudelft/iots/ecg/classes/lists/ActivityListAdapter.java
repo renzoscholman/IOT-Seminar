@@ -1,4 +1,4 @@
-package com.tudelft.iots.ecg.classes;
+package com.tudelft.iots.ecg.classes.lists;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.tudelft.iots.ecg.R;
+import com.tudelft.iots.ecg.classes.DateFormatter;
+import com.tudelft.iots.ecg.classes.HeartRateZones;
 import com.tudelft.iots.ecg.database.model.Activity;
 
 import java.util.ArrayList;

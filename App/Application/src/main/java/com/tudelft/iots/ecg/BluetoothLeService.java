@@ -111,6 +111,8 @@ public class BluetoothLeService extends Service {
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             String intentAction;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
+                startTimeHR = -1;
+                startTime = -1;
                 intentAction = ACTION_GATT_CONNECTED;
                 mConnectionState = STATE_CONNECTED;
                 broadcastUpdate(intentAction);
@@ -120,6 +122,8 @@ public class BluetoothLeService extends Service {
                         mBluetoothGatt.discoverServices());
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                startTimeHR = -1;
+                startTime = -1;
                 intentAction = ACTION_GATT_DISCONNECTED;
                 mConnectionState = STATE_DISCONNECTED;
                 Log.i(TAG, "Disconnected from GATT server.");
@@ -449,6 +453,8 @@ public class BluetoothLeService extends Service {
             return true;
         }
 
+        Log.d(TAG, "Connecting to: "+address);
+
         final BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
         if (device == null) {
             Log.w(TAG, "Device not found.  Unable to connect.");
@@ -456,6 +462,9 @@ public class BluetoothLeService extends Service {
         }
         // We want to directly connect to the device, so we are setting the autoConnect
         // parameter to false.
+        if(mBluetoothGatt != null){
+            mBluetoothGatt.close();
+        }
         mBluetoothGatt = device.connectGatt(this, false, mGattCallback);
         Log.d(TAG, "Trying to create a new connection.");
         if(!address.equals(mBluetoothDeviceAddress)){
@@ -469,6 +478,7 @@ public class BluetoothLeService extends Service {
     }
 
     public boolean isConnectedTo(String address){
+        if(address == null) return false;
         return mConnectionState != STATE_DISCONNECTED && address.equals(mBluetoothDeviceAddress) && mBluetoothGatt != null;
     }
 
@@ -555,7 +565,7 @@ public class BluetoothLeService extends Service {
         if (UUID_HEART_RATE_MEASUREMENTS.equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
             Log.d(TAG, "Enabling HR Notifications");
         }
@@ -564,7 +574,7 @@ public class BluetoothLeService extends Service {
         if (UUID_ECG_MEASUREMENTS.equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_INDICATION_VALUE);
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             mBluetoothGatt.writeDescriptor(descriptor);
             Log.d(TAG, "Enabling ECG Notifications");
         }

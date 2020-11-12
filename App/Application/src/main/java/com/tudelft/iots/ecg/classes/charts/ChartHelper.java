@@ -9,7 +9,6 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -28,7 +27,6 @@ import com.github.mikephil.charting.interfaces.dataprovider.LineDataProvider;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.Utils;
 import com.tudelft.iots.ecg.R;
-import com.tudelft.iots.ecg.classes.MyMarkerView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

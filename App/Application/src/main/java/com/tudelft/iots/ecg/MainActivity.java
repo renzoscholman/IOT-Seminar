@@ -1,7 +1,7 @@
 package com.tudelft.iots.ecg;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.persistence.room.Room;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
+
+import com.tudelft.iots.ecg.classes.ToastView;
 import com.tudelft.iots.ecg.classes.charts.ChartHelper;
 import com.tudelft.iots.ecg.database.AppDatabase;
 import com.tudelft.iots.ecg.database.model.ECG;
@@ -40,7 +42,12 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
     protected List<HeartRate> chart_hrs = null;
     protected List<ECG> chart_ecg = null;
 
+    protected LiveData<List<ECG>> ecgs = null;
+    protected LiveData<List<HeartRate>> hrs = null;
+
     protected boolean mChartUpdated = false;
+
+    protected Thread resetQueryThread = null;
 
     Thread mUpdateStartTimeThread = null;
 
@@ -77,7 +84,6 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        checkPreferences();
         db = AppDatabase.getDatabase(this);
 
         super.mGattUpdateReceiver = new BroadcastReceiver() {
@@ -95,26 +101,52 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         setupChart();
     }
 
-    private void checkPreferences() {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        resetQueryThread.interrupt();
+    }
+
+    @Override
+    protected void onResume() {
+        checkPreferences();
+        super.onResume();
+
+        resetQueryThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    // Reset the queries every 30 seconds to make sure we dont work with too much data
+                    Thread.sleep(30000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                updatingChart = false;
+            }
+        });
+    }
+
+    private boolean checkPreferences() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if(!preferences.getBoolean("pref_finished", false)){
-            Toast.makeText(this, R.string.notice_preferences, Toast.LENGTH_LONG).show();
+            ToastView.showToast(this, R.string.notice_preferences, 3000);
             startActivity(new Intent(this, PreferenceActivity.class));
-            finish();
+            return false;
         }
 
         boolean hasBLE = getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
         if(hasBLE){
             if(preferences.getString("pref_device_address", null) == null){
-                Toast.makeText(this, R.string.notice_hr_monitor, Toast.LENGTH_LONG).show();
+                ToastView.showToast(this, R.string.notice_hr_monitor, 3000);
                 startActivity(new Intent(this, DeviceScanActivity.class));
-                finish();
+                return false;
             }
         } else {
             Toast.makeText(this, R.string.notice_ble_unsupported, Toast.LENGTH_LONG).show();
         }
 
         super.enableECG = preferences.getBoolean("pref_use_ecg", false);
+        return true;
     }
 
     private void setupChart() {
@@ -126,7 +158,7 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
             chartHelper.setupAxis(showSeconds);
             chartHelper.setupSeekBars(showSeconds);
             chartHelper.setupLegend();
-            refreshView();
+            setQueries();
         }
     }
 
@@ -140,7 +172,9 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
 
 
 
-    public void refreshView(){
+    public void setQueries(){
+        // Queries use Android LiveData, so only reset these every 30 seconds.
+        // This is to prevent too much data being queried and the ui becoming slow
         if(updatingChart) return;
         updatingChart = true;
 
@@ -149,14 +183,23 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         long start = currentTime - length;
         Log.d(TAG, String.format("Refreshing view at timestamp: %d", start));
 
-        db.ecgDao().getECGsAfter(start).observe(this, ecgObserver);
-        db.heartRateDao().getHeartRatesAfter(start).observe(this, hrObserver);
+        if(ecgs != null){
+            ecgs.removeObservers(this);
+        }
+        ecgs = db.ecgDao().getECGsAfter(start);
+        ecgs.observe(this, ecgObserver);
+        if(hrs != null){
+            ecgs.removeObservers(this);
+        }
+        hrs = db.heartRateDao().getHeartRatesAfter(start);
+        hrs.observe(this, hrObserver);
     }
 
+    // Try to reset the queries every time new data is available
     public void updateDataThreaded(){
         new Thread(new Runnable() {
             public void run() {
-                refreshView();
+                setQueries();
             }
         }).start();
     }
@@ -191,6 +234,7 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         updateDataThreaded();
     }
 
+    // Updates the start time for the graph
     private void updateStartTime(){
         long length = showSeconds * 1000;
         long currentTime = System.currentTimeMillis();
@@ -199,6 +243,7 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         startMillis = start;
     }
 
+    // Sets the new graph HR data
     private void fillHRData(){
         if(chart_hrs == null) return;
 
@@ -210,12 +255,16 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         }
 
         chartHelper.setHRData(values);
+        if(!super.enableECG){
+            chartHelper.setECGData(new ArrayList<Entry>());
+        }
         updateStartTime();
 
         // redraw
         mChart.invalidate();
     }
 
+    // Sets the new graph ECG data
     private void fillECGData(){
         if(chart_ecg == null) return;
 
@@ -243,6 +292,7 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
 
     @Override
     protected IntentFilter makeGattUpdateIntentFilter() {
+        // This activity is only interested in new data
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(BluetoothLeService.ACTION_DATA_AVAILABLE);
         return intentFilter;

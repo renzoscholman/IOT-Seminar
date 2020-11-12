@@ -1,4 +1,4 @@
-package com.tudelft.iots.ecg.classes;
+package com.tudelft.iots.ecg.classes.lists;
 
 import android.bluetooth.BluetoothDevice;
 import android.view.LayoutInflater;

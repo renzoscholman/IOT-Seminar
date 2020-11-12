@@ -40,35 +40,16 @@ public class ActivityTrackingActivity extends ServiceActivity {
     protected boolean tracking = false;
     protected Activity current_activity = null;
 
-    protected List<ECG> chart_ecg = null;
     protected List<HeartRate> chart_hrs = null;
     protected List<HeartRate> tracked_hrs = null;
 
     protected boolean mUpdatingChart = false;
     LiveData<List<HeartRate>> hrsData = null;
-    LiveData<List<ECG>> ecgData = null;
 
     long last_activity_id = -1;
     protected int AGE = 25;
 
     AppDatabase db;
-
-    final Observer<List<ECG>> ecgObserver = new Observer<List<ECG>>() {
-        @Override
-        public void onChanged(@Nullable List<ECG> ecgs) {
-            if(ecgs == null || ecgs.size() == 0){
-                //updatingChart = false;
-                Log.d(TAG, "Got no ecg results");
-                return;
-            }
-
-            chart_ecg = ecgs;
-
-            setECGData(chart_ecg);
-            // redraw
-            mChart.invalidate();
-        }
-    };
 
     final Observer<List<HeartRate>> hrObserver = new Observer<List<HeartRate>>() {
         @Override
@@ -210,8 +191,6 @@ public class ActivityTrackingActivity extends ServiceActivity {
     protected void unsubscribeObserver(){
         if(hrsData != null)
             hrsData.removeObservers(this);
-        if(ecgData != null)
-            ecgData.removeObservers(this);
         if(mChart != null){
             mChart.setAlpha(0);
         }
@@ -286,8 +265,6 @@ public class ActivityTrackingActivity extends ServiceActivity {
         mUpdatingChart = true;
         hrsData = db.heartRateDao().getHeartRatesAfter(current_activity.timestamp_start);
         hrsData.observe(this, hrObserver);
-        ecgData = db.ecgDao().getECGsAfter(current_activity.timestamp_start);
-        ecgData.observe(this, ecgObserver);
     }
 
     public void updateDataThreaded(){
@@ -310,7 +287,8 @@ public class ActivityTrackingActivity extends ServiceActivity {
         ArrayList<Entry> values = new ArrayList<>();
         for (int i = 0; i < hrs.size(); i++) {
             HeartRate hr = hrs.get(i);
-            values.add(new Entry(i, hr.heartRate, hr.timestamp));
+            long x = hr.timestamp - current_activity.timestamp_start;
+            values.add(new Entry((float) x, hr.heartRate));
         }
 
         chartHelper.setHRData(values);

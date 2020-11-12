@@ -1,4 +1,4 @@
-package com.tudelft.iots.ecg.classes;
+package com.tudelft.iots.ecg.classes.charts;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

@@ -35,7 +35,7 @@ public abstract class ServiceActivity extends AppCompatActivity {
             mBluetoothLeService = ((BluetoothLeService.LocalBinder) service).getService();
             if (!mBluetoothLeService.initialize()) {
                 Log.e(TAG, "Unable to initialize Bluetooth");
-                //finish();
+                finish();
             }
             mBluetoothLeService.enableECG(enableECG);
 
@@ -48,10 +48,7 @@ public abstract class ServiceActivity extends AppCompatActivity {
                     // Automatically connects to the device upon successful start-up initialization.
                     new Thread(new Runnable() {
                         public void run() {
-                            if(forceReconnect && mBluetoothLeService.isConnectedTo(mDeviceAddress)){
-                                mBluetoothLeService.close();
-                            }
-                            mBluetoothLeService.connect(mDeviceAddress);
+                        mBluetoothLeService.connect(mDeviceAddress);
                         }
                     }).start();
                 }
@@ -78,8 +75,14 @@ public abstract class ServiceActivity extends AppCompatActivity {
 
         registerReceiver(mGattUpdateReceiver, makeGattUpdateIntentFilter());
         if (mBluetoothLeService != null) {
-            final boolean result = mBluetoothLeService.connect(mDeviceAddress);
-            Log.d(TAG, "Connect request result=" + result);
+            if(mDeviceAddress == null){
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                mDeviceAddress = preferences.getString(getString(R.string.preference_device_address), "");
+            }
+            if(mDeviceAddress != null && mDeviceAddress.length() > 0){
+                final boolean result = mBluetoothLeService.connect(mDeviceAddress);
+                Log.d(TAG, "Connect request result=" + result);
+            }
         }
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         enableECG = preferences.getBoolean("pref_use_ecg", false);
@@ -95,11 +98,6 @@ public abstract class ServiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if(savedInstanceState == null){
-            if(mDeviceAddress == null){
-                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-                mDeviceAddress = preferences.getString(getString(R.string.preference_device_address), null);
-            }
-
             Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
             serviceConnected = bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);
         }
