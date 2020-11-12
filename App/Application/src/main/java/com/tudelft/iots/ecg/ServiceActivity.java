@@ -18,9 +18,14 @@ public abstract class ServiceActivity extends AppCompatActivity {
     protected BluetoothLeService mBluetoothLeService;
 
     protected BroadcastReceiver mGattUpdateReceiver;
+    protected boolean serviceConnected = false;
 
     protected String mDeviceName;
     protected String mDeviceAddress;
+
+    protected boolean forceReconnect = false;
+    protected boolean enableECG = false;
+    protected boolean ecgEnabled = false;
 
     // Code to manage Service lifecycle.
     protected final ServiceConnection mServiceConnection = new ServiceConnection() {
@@ -32,11 +37,24 @@ public abstract class ServiceActivity extends AppCompatActivity {
                 Log.e(TAG, "Unable to initialize Bluetooth");
                 //finish();
             }
-            if (mDeviceAddress != null && mDeviceAddress.length() == 0) {
+            mBluetoothLeService.enableECG(enableECG);
+
+            if(mDeviceAddress == null){
                 Log.e(TAG, "No device address given");
             } else {
-                // Automatically connects to the device upon successful start-up initialization.
-                mBluetoothLeService.connect(mDeviceAddress);
+                if (mDeviceAddress.length() == 0) {
+                    Log.e(TAG, "No device address given");
+                } else {
+                    // Automatically connects to the device upon successful start-up initialization.
+                    new Thread(new Runnable() {
+                        public void run() {
+                            if(forceReconnect && mBluetoothLeService.isConnectedTo(mDeviceAddress)){
+                                mBluetoothLeService.close();
+                            }
+                            mBluetoothLeService.connect(mDeviceAddress);
+                        }
+                    }).start();
+                }
             }
         }
 
@@ -45,7 +63,6 @@ public abstract class ServiceActivity extends AppCompatActivity {
             mBluetoothLeService = null;
         }
     };
-    protected boolean serviceConnected = false;
 
     @Override
     protected void onPause() {
@@ -64,6 +81,13 @@ public abstract class ServiceActivity extends AppCompatActivity {
             final boolean result = mBluetoothLeService.connect(mDeviceAddress);
             Log.d(TAG, "Connect request result=" + result);
         }
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        enableECG = preferences.getBoolean("pref_use_ecg", false);
+        Log.d(TAG, String.format("Read ECG preference value: %b", enableECG));
+
+        if(serviceConnected && mBluetoothLeService != null){
+            mBluetoothLeService.enableECG(enableECG);
+        }
     }
 
     @Override
@@ -71,8 +95,10 @@ public abstract class ServiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         if(savedInstanceState == null){
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            mDeviceAddress = preferences.getString(getString(R.string.preference_device_address), null);
+            if(mDeviceAddress == null){
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+                mDeviceAddress = preferences.getString(getString(R.string.preference_device_address), null);
+            }
 
             Intent gattServiceIntent = new Intent(this, BluetoothLeService.class);
             serviceConnected = bindService(gattServiceIntent, mServiceConnection, BIND_AUTO_CREATE);

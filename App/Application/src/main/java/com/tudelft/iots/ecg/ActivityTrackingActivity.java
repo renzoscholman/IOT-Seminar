@@ -1,6 +1,7 @@
 package com.tudelft.iots.ecg;
 
-import android.arch.persistence.room.Room;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,6 +11,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +25,7 @@ import com.tudelft.iots.ecg.classes.HeartRateZones;
 import com.tudelft.iots.ecg.classes.charts.ChartHelper;
 import com.tudelft.iots.ecg.database.AppDatabase;
 import com.tudelft.iots.ecg.database.model.Activity;
+import com.tudelft.iots.ecg.database.model.ECG;
 import com.tudelft.iots.ecg.database.model.HeartRate;
 
 import java.util.ArrayList;
@@ -37,14 +40,52 @@ public class ActivityTrackingActivity extends ServiceActivity {
     protected boolean tracking = false;
     protected Activity current_activity = null;
 
+    protected List<ECG> chart_ecg = null;
     protected List<HeartRate> chart_hrs = null;
     protected List<HeartRate> tracked_hrs = null;
+
+    protected boolean mUpdatingChart = false;
+    LiveData<List<HeartRate>> hrsData = null;
+    LiveData<List<ECG>> ecgData = null;
 
     long last_activity_id = -1;
     protected int AGE = 25;
 
     AppDatabase db;
 
+    final Observer<List<ECG>> ecgObserver = new Observer<List<ECG>>() {
+        @Override
+        public void onChanged(@Nullable List<ECG> ecgs) {
+            if(ecgs == null || ecgs.size() == 0){
+                //updatingChart = false;
+                Log.d(TAG, "Got no ecg results");
+                return;
+            }
+
+            chart_ecg = ecgs;
+
+            setECGData(chart_ecg);
+            // redraw
+            mChart.invalidate();
+        }
+    };
+
+    final Observer<List<HeartRate>> hrObserver = new Observer<List<HeartRate>>() {
+        @Override
+        public void onChanged(@Nullable List<HeartRate> hrs) {
+            if(hrs == null || hrs.size() == 0){
+                //updatingChart = false;
+                Log.d(TAG, "Got no hr results");
+                return;
+            }
+
+            chart_hrs = hrs;
+
+            setHRData(chart_hrs);
+            // redraw
+            mChart.invalidate();
+        }
+    };
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.mGattUpdateReceiver = new BroadcastReceiver() {
@@ -67,15 +108,14 @@ public class ActivityTrackingActivity extends ServiceActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().setTitle(R.string.title_tracking);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         tfRegular = Typeface.createFromAsset(getAssets(), "OpenSans-Regular.ttf");
 
         setTitle("Activity Tracking");
 
         setupButtons();
 
-        db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "heart-rate-storage")
-                .fallbackToDestructiveMigration()
-                .build();
+        db = AppDatabase.getDatabase(this);
 
         if(mChart == null){
             chartHelper = new ChartHelper(this);
@@ -117,7 +157,6 @@ public class ActivityTrackingActivity extends ServiceActivity {
         if(current_activity != null){
             startStopTracking();
         }
-        db.close();
     }
 
     @Override
@@ -161,22 +200,39 @@ public class ActivityTrackingActivity extends ServiceActivity {
     public void startActivity(){
         current_activity = new Activity();
         current_activity.timestamp_start = System.currentTimeMillis();
+        refreshView();
 
         if(mChart != null){
             mChart.setAlpha(1);
         }
     }
 
-    public void stopActivity(){
+    protected void unsubscribeObserver(){
+        if(hrsData != null)
+            hrsData.removeObservers(this);
+        if(ecgData != null)
+            ecgData.removeObservers(this);
         if(mChart != null){
             mChart.setAlpha(0);
         }
+    }
+
+    public void stopActivity(){
+        mUpdatingChart = false;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                unsubscribeObserver();
+            }
+        });
 
         if(tracked_hrs == null){
+            current_activity = null;
             return;
         }
 
         if(tracked_hrs.size() == 0){
+            current_activity = null;
             return;
         }
 
@@ -226,38 +282,25 @@ public class ActivityTrackingActivity extends ServiceActivity {
     }
 
     public void refreshView(){
-        if(current_activity == null) return;
-        AppDatabase db = Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "heart-rate-storage")
-                .fallbackToDestructiveMigration()
-                .build();
-        chart_hrs = db.heartRateDao().getHeartRatesAtTime(current_activity.timestamp_start, System.currentTimeMillis());
-        db.close();
-        runOnUiThread(new Runnable() {
-            public void run() {
-                setHRData(chart_hrs);
-                // redraw
-                mChart.invalidate();
-            }
-        });
+        if(current_activity == null || mUpdatingChart) return;
+        mUpdatingChart = true;
+        hrsData = db.heartRateDao().getHeartRatesAfter(current_activity.timestamp_start);
+        hrsData.observe(this, hrObserver);
+        ecgData = db.ecgDao().getECGsAfter(current_activity.timestamp_start);
+        ecgData.observe(this, ecgObserver);
     }
 
     public void updateDataThreaded(){
         new Thread(new Runnable() {
             public void run() {
-                if(tracking) refreshView();
+                if(tracking && !mUpdatingChart) refreshView();
             }
         }).start();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity, menu);
-        return true;
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.menu_home) {
+        if (item.getItemId() == android.R.id.home) {
             onBackPressed();
         }
         return true;
@@ -271,6 +314,17 @@ public class ActivityTrackingActivity extends ServiceActivity {
         }
 
         chartHelper.setHRData(values);
+    }
+
+    private void setECGData(List<ECG> ecgs){
+        ArrayList<Entry> values = new ArrayList<>();
+        for (int i = 0; i < ecgs.size(); i++) {
+            ECG ecg = ecgs.get(i);
+            long x = ecg.timestamp - current_activity.timestamp_start;
+            values.add(new Entry((float)x, ecg.ecg));
+        }
+
+        chartHelper.setECGData(values);
     }
 
     @Override
