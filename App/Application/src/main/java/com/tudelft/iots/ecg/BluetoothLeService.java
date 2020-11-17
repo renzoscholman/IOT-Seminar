@@ -16,6 +16,8 @@
 
 package com.tudelft.iots.ecg;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -33,7 +35,6 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
 import com.tudelft.iots.ecg.classes.HeartRateZones;
@@ -331,16 +332,27 @@ public class BluetoothLeService extends Service {
     private void showHRNotification(boolean low, int total) {
         int text_resource = low ? R.string.notice_low_hr : R.string.notice_high_hr;
         int title_resource = low ? R.string.notice_low_hr_title : R.string.notice_high_hr_title;
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "")
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        String channelName = "Channel Name";
+        String channelId = "hr_monitor_channel_1";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel mChannel = new NotificationChannel(
+                    channelId, channelName, NotificationManager.IMPORTANCE_HIGH);
+            notificationManager.createNotificationChannel(mChannel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
                 .setSmallIcon(R.drawable.notification)
                 .setContentTitle(getResources().getString(title_resource))
                 .setContentText(getString(text_resource, total))
+                .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(getString(text_resource, total)))
                 .setPriority(NotificationCompat.PRIORITY_HIGH);
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
         // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(hrNotificationId++, builder.build());
+        int id = low ? hrNotificationId : hrNotificationId + 1;
+        notificationManager.notify(id, builder.build());
     }
 
     /**

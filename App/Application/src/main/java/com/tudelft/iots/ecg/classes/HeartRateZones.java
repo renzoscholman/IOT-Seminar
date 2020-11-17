@@ -18,7 +18,7 @@ public class HeartRateZones {
 
     public HeartRateZones(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        mAge = prefs.getInt("pref_user_age", 25);
+        mAge = Integer.parseInt(prefs.getString("pref_user_age", "25"));
     }
 
     public List<Integer> getZones(){

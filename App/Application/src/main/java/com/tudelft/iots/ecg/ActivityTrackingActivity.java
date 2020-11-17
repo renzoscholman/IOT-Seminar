@@ -47,7 +47,6 @@ public class ActivityTrackingActivity extends ServiceActivity {
     LiveData<List<HeartRate>> hrsData = null;
 
     long last_activity_id = -1;
-    protected int AGE = 25;
 
     AppDatabase db;
 
@@ -221,7 +220,7 @@ public class ActivityTrackingActivity extends ServiceActivity {
         for(int i = 0; i < numzones; i++)  {
             zones.add(new ArrayList<HeartRate>());
         }
-        List<Integer> hrZones = new HeartRateZones(AGE).getZones();
+        List<Integer> hrZones = new HeartRateZones(this).getZones();
         for(HeartRate hr : tracked_hrs){
             boolean added = false;
             for(int i = 0; i < hrZones.size(); i++){
