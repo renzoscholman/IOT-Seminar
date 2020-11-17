@@ -49,10 +49,9 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
 
     protected Thread resetQueryThread = null;
 
-    Thread mUpdateStartTimeThread = null;
-
     AppDatabase db;
 
+    // Database observer for new ECG values
     final Observer<List<ECG>> ecgObserver = new Observer<List<ECG>>() {
         @Override
         public void onChanged(@Nullable List<ECG> ecgs) {
@@ -68,6 +67,7 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         }
     };
 
+    // Database observer for new HR values
     final Observer<List<HeartRate>> hrObserver = new Observer<List<HeartRate>>() {
         @Override
         public void onChanged(@Nullable List<HeartRate> hrs) {
@@ -86,32 +86,31 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         db = AppDatabase.getDatabase(this);
 
+        // Set receiver for bluetooth updates
         super.mGattUpdateReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (BluetoothLeService.ACTION_DATA_AVAILABLE.equals(intent.getAction())) {
-                    updateDataThreaded();
+                    updateDataThreaded(); // Refresh view in case of new data
                 }
             }
         };
         super.onCreate(savedInstanceState);
 
+        // Setup current view with menu, title and chart layout
         setContentView(R.layout.activity_main);
         getSupportActionBar().setTitle(R.string.title_devices);
         setupChart();
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        resetQueryThread.interrupt();
-    }
-
-    @Override
     protected void onResume() {
+        // Check preferences and send user to other activity if required
         checkPreferences();
         super.onResume();
 
+        // Initiate chart reset query thread to periodically reset the queries to preven too much
+        // data from being queried.
         resetQueryThread = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -121,17 +120,31 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                // Set this value to false to trigger the next call to setQueries to restart the query
                 updatingChart = false;
             }
         });
     }
 
-    private boolean checkPreferences() {
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        // Interrupt reset query thread as it is not required by other activities
+        resetQueryThread.interrupt();
+    }
+
+    /**
+     * Checks if the user has finished the setup of the preferences to set his/her age
+     * Also checks if the user has connected a device, if not send the user to device setup view
+     */
+    private void checkPreferences() {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         if(!preferences.getBoolean("pref_finished", false)){
             ToastView.showToast(this, R.string.notice_preferences, 3000);
             startActivity(new Intent(this, PreferenceActivity.class));
-            return false;
+            return;
         }
 
         boolean hasBLE = getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE);
@@ -139,16 +152,18 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
             if(preferences.getString("pref_device_address", null) == null){
                 ToastView.showToast(this, R.string.notice_hr_monitor, 3000);
                 startActivity(new Intent(this, DeviceScanActivity.class));
-                return false;
+                return;
             }
         } else {
             Toast.makeText(this, R.string.notice_ble_unsupported, Toast.LENGTH_LONG).show();
         }
 
         super.enableECG = preferences.getBoolean("pref_use_ecg", false);
-        return true;
     }
 
+    /**
+     * Sets up the chart once through the ChartHelper class and initiates the queries
+     */
     private void setupChart() {
         if(mChart == null){
             SeekBar seekbar = findViewById(R.id.seekBar1);
@@ -162,16 +177,9 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         }
     }
 
-    @Override
-    protected void onDestroy() {
-        if(mUpdateStartTimeThread != null){
-            mUpdateStartTimeThread.interrupt();
-        }
-        super.onDestroy();
-    }
-
-
-
+    /**
+     * Sets the queries once and adds observers to these to monitor changes and refresh the views
+     */
     public void setQueries(){
         // Queries use Android LiveData, so only reset these every 30 seconds.
         // This is to prevent too much data being queried and the ui becoming slow
@@ -183,19 +191,25 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
         long start = currentTime - length;
         Log.d(TAG, String.format("Refreshing view at timestamp: %d", start));
 
+        // If we are re-instantiating the observers to prevent querying too much data, first remove the old
         if(ecgs != null){
             ecgs.removeObservers(this);
         }
         ecgs = db.ecgDao().getECGsAfter(start);
         ecgs.observe(this, ecgObserver);
+
+
+        // If we are re-instantiating the observers to prevent querying too much data, first remove the old
         if(hrs != null){
-            ecgs.removeObservers(this);
+            hrs.removeObservers(this);
         }
         hrs = db.heartRateDao().getHeartRatesAfter(start);
         hrs.observe(this, hrObserver);
     }
 
-    // Try to reset the queries every time new data is available
+    /**
+     * Try to reset the queries every time new data is available
+     */
     public void updateDataThreaded(){
         new Thread(new Runnable() {
             public void run() {
@@ -231,6 +245,9 @@ public class MainActivity extends ServiceActivity implements SeekBar.OnSeekBarCh
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
         showSeconds = seekBar.getProgress();
         chartHelper.updateSeekbar(showSeconds);
+
+        // Set updating to false and restart queries to show new length of chart of showSeconds
+        updatingChart = false;
         updateDataThreaded();
     }
 

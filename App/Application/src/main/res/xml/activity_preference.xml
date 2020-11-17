@@ -8,7 +8,6 @@
         android:title="Data">
 
         <CheckBoxPreference
-            android:inputType="number"
             android:persistent="true"
             android:key="pref_use_ecg"
             android:title="ECG Data"
@@ -25,23 +24,6 @@
             android:key="pref_user_age"
             android:title="Your age"
             android:summary="Used to calculate heart rate statistics"/>
-
-    </PreferenceCategory>
-
-    <PreferenceCategory
-        android:title="Debug">
-
-        <EditTextPreference
-            android:key="pref_mqtt_server"
-            android:persistent="true"
-            android:title="MQTT Server address"
-            android:summary="Address to which MQTT numbers are published"/>
-
-        <EditTextPreference
-            android:key="pref_mqtt_client_id"
-            android:persistent="true"
-            android:title="MQTT Client ID"
-            android:summary="Client ID used for MQTT connection"/>
 
     </PreferenceCategory>
 

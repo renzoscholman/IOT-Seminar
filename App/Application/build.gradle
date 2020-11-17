@@ -41,10 +41,6 @@ dependencies {
 
     // Chart library
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
-
-    // MQTT libraries
-    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
-    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
 }
 
 // The sample build uses multiple directories to

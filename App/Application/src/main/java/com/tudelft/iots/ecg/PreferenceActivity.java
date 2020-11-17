@@ -1,6 +1,5 @@
 package com.tudelft.iots.ecg;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
@@ -15,7 +14,10 @@ public class PreferenceActivity extends AppCompatActivity implements SharedPrefe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Create new fragment based on preferences xml
         getFragmentManager().beginTransaction().replace(android.R.id.content, new MyPreferenceFragment()).commit();
+
+        // Enable support action bar with back arrow button to previous screen
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
@@ -44,6 +46,7 @@ public class PreferenceActivity extends AppCompatActivity implements SharedPrefe
 
     @Override
     public void onBackPressed() {
+        // Check if user has successfully set his/her age and if so flag preferences as finished
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String age = preferences.getString("pref_user_age", "-1");
         boolean finished = preferences.getBoolean("pref_finished", false);

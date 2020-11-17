@@ -41,14 +41,8 @@ import com.tudelft.iots.ecg.database.interfaces.HeartRateDao;
 import com.tudelft.iots.ecg.database.model.ECG;
 import com.tudelft.iots.ecg.database.model.HeartRate;
 
-//import org.eclipse.paho.android.service.MqttAndroidClient;
-//import org.eclipse.paho.client.mqttv3.IMqttActionListener;
-//import org.eclipse.paho.client.mqttv3.IMqttToken;
-//import org.eclipse.paho.client.mqttv3.MqttException;
-
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Service for managing connection and data communication with a GATT server hosted on a
@@ -64,7 +58,6 @@ public class BluetoothLeService extends Service {
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
-    //private MqttAndroidClient mMQTTClient;
     private boolean initialized = false;
     private boolean enabledECG = false;
 
@@ -104,15 +97,15 @@ public class BluetoothLeService extends Service {
     public final static UUID UUID_ECG_MEASUREMENTS =
             UUID.fromString(SampleGattAttributes.ECG_MEASUREMENTS);
 
-    // Implements callback methods for GATT events that the app cares about.  For example,
-    // connection change and services discovered.
+    // Implements callback methods for GATT events
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             String intentAction;
+            // Reset start times of the connection
+            startTimeHR = -1;
+            startTime = -1;
             if (newState == BluetoothProfile.STATE_CONNECTED) {
-                startTimeHR = -1;
-                startTime = -1;
                 intentAction = ACTION_GATT_CONNECTED;
                 mConnectionState = STATE_CONNECTED;
                 broadcastUpdate(intentAction);
@@ -122,8 +115,6 @@ public class BluetoothLeService extends Service {
                         mBluetoothGatt.discoverServices());
 
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                startTimeHR = -1;
-                startTime = -1;
                 intentAction = ACTION_GATT_DISCONNECTED;
                 mConnectionState = STATE_DISCONNECTED;
                 Log.i(TAG, "Disconnected from GATT server.");
@@ -135,40 +126,37 @@ public class BluetoothLeService extends Service {
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
+
+                // Automatically connect to HR and/or ECG characteristics
                 connectToServices(gatt);
             } else {
                 Log.w(TAG, "onServicesDiscovered received: " + status);
             }
         }
 
+        /**
+         * Automatically connect to the HR/ECG characteristics by enabling notifications for these
+         * @param gatt BluetoothGatt connection object
+         */
         private void connectToServices(final BluetoothGatt gatt) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     BluetoothGattService ecg_service = gatt.getService(UUID_ECG_SERVICE);
                     if(ecg_service != null){
+                        // Enable the notifications for the ECG service
                         BluetoothGattCharacteristic characteristic = ecg_service.getCharacteristic(UUID_ECG_MEASUREMENTS);
                         setCharacteristicNotification(characteristic, true);
-                        //add sleep delay 500
+                        // Add sleep delay 500 as the bluetooth driver returns immediately after
+                        // setting/writing characteristic values and errors occur if we overwrite it
                         try {
                             Thread.sleep(500);
                         }catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        byte val = 1;
-                        if(enabledECG){
-                            val = 2;
-                        }
-                        writeCharacteristicValue(characteristic, val);
                     }
 
-                    //add sleep delay 500
-                    try {
-                        Thread.sleep(500);
-                    }catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
+                    // Enable the heart rate notifications.
                     BluetoothGattService hr_service = gatt.getService(UUID_HEART_RATE_SERVICE);
                     if(hr_service != null){
                         BluetoothGattCharacteristic characteristic = hr_service.getCharacteristic(UUID_HEART_RATE_MEASUREMENTS);
@@ -190,6 +178,8 @@ public class BluetoothLeService extends Service {
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             super.onCharacteristicWrite(gatt, characteristic, status);
+
+            // Debug callback to check if correct data is send for power mode
             Log.d(TAG, String.format("Written to characteristic: %s (status %d)", characteristic.getUuid(), status));
         }
 
@@ -202,6 +192,7 @@ public class BluetoothLeService extends Service {
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
             super.onDescriptorWrite(gatt, descriptor, status);
+            // Callback to log successful connections to characteristics
             if(descriptor.getCharacteristic().getUuid() == UUID_HEART_RATE_MEASUREMENTS){
                 Log.d(TAG, "Connected to HR Measurement characteristic");
             }
@@ -211,36 +202,46 @@ public class BluetoothLeService extends Service {
         }
     };
 
+    /**
+     * Sends broadcast based on intent of the action
+     * @param action String
+     */
     private void broadcastUpdate(final String action) {
         final Intent intent = new Intent(action);
         sendBroadcast(intent);
     }
 
-    private void broadcastUpdatei(final String action, long i) {
-        final Intent intent = new Intent(action);
-        intent.putExtra(EXTRA_DATA, i);
-        sendBroadcast(intent);
-    }
-
+    /**
+     * Reads values from the received BluetoothGattCharacteristic and stores its data in the DB and/or
+     * transmits broadcasts based on the received data
+     *
+     * @param action String action to broadcast
+     * @param characteristic BluetoothGattCharacteristic to read value from
+     */
     private void broadcastUpdate(final String action,
                                  final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(action);
 
-        // This is special handling for the Heart Rate Measurement profile.  Data parsing is
-        // carried out as per profile specifications:
-        // http://developer.bluetooth.org/gatt/characteristics/Pages/CharacteristicViewer.aspx?u=org.bluetooth.characteristic.heart_rate_measurement.xml
         if (UUID_HEART_RATE_MEASUREMENTS.equals(characteristic.getUuid())) {
+            // Extract heart rate and timestamp from packet
             final byte[] data = characteristic.getValue();
             int timestamp = 0;
             for(int i = 0; i < 4; i++){
                 timestamp = (timestamp << 8) | data[i] & 0xff;
             }
             final int heartRate = data[4] & 0xff;
+
+            // Log value
             Log.d(TAG, String.format("Received heart rate: %d with ms timestamp: %d", heartRate, timestamp));
             intent.putExtra(EXTRA_DATA, String.valueOf(heartRate));
+
+            // In case timing was not initiated before, do so now.
             if(startTimeHR < 0){
                 startTimeHR = System.currentTimeMillis() - timestamp;
             }
+
+            // Store the heart rate in the database, do this in a separate thread in order to not
+            // hold up the bluetooth thread
             final HeartRateDao HR = db.heartRateDao();
             final HeartRate hr = new HeartRate();
             hr.heartRate = heartRate;
@@ -251,23 +252,26 @@ public class BluetoothLeService extends Service {
                 }
             }).start();
         } else if (UUID_ECG_MEASUREMENTS.equals(characteristic.getUuid())){
-            // For all other profiles, writes the data formatted in HEX.
+            // Extract ECG data from packet
             final byte[] data = characteristic.getValue();
             if (data != null && data.length > 0) {
+                // Set start time if not done so before
                 if(startTime < 0){
                     startTime = System.currentTimeMillis();
                 }
                 final ECGDao ECGdao = db.ecgDao();
-//                final StringBuilder stringBuilder = new StringBuilder(data.length);
+                // As the packet holds 13 * 1.5 bytes of data packet into a 19.5 byte buffer, unpack accordingly
                 for(int i = 0; i < 13; i++){
                     int ecgValue;
                     int start = (int) (i * 1.5);
+                    // Bitshift, mask and or the data in the right manner to reconstruct 12 bit value
                     if(i % 2 == 0){
                         ecgValue = (data[start] << 4) | ((data[start + 1] >> 4) & 0xf);
                     } else {
                         ecgValue = ((data[start] & 0xf) << 8) | (data[start + 1] & 0xff);
                     }
 
+                    // Create new database entry and store in a separate thread to not block bluetooth thread
                     final ECG ecg = new ECG();
                     ecg.ecg = (short) ecgValue;
                     ecg.timestamp = startTime + i * 10;
@@ -277,8 +281,8 @@ public class BluetoothLeService extends Service {
                         }
                     }).start();
                 }
+                // Increase time by 130 milliseconds (100Hz sampling rate, 13 samples per packet)
                 startTime += 130;
-                //Log.d(TAG, String.format("Received ECG measurements, current start time: %d", startTime));
             }
         } else {
             // For all other profiles, writes the data formatted in HEX.
@@ -293,6 +297,11 @@ public class BluetoothLeService extends Service {
         sendBroadcast(intent);
     }
 
+    /**
+     * Call this function to trigger another thread for setting the power mode of the ECG device
+     *
+     * @param enableECG boolean, speaks for itself
+     */
     public void enableECG(boolean enableECG) {
         if(enableECG != enabledECG){
             enabledECG = enableECG;
@@ -305,15 +314,19 @@ public class BluetoothLeService extends Service {
         }
     }
 
+    /**
+     * Sends a value to one of the characteristics on the device to enable ECG data communication
+     */
     private void setECG() {
+        // Only do this if we are connected of course
         if(mConnectionState == STATE_CONNECTED){
             BluetoothGattService ecg_service = mBluetoothGatt.getService(UUID_ECG_SERVICE);
             if(ecg_service != null){
                 BluetoothGattCharacteristic characteristic = ecg_service.getCharacteristic(UUID_ECG_MEASUREMENTS);
                 startTime = -1;
-                byte val = 49;
+                byte val = 49; // Corresponds to balanced power mode (only hr)
                 if(enabledECG){
-                    val = 50;
+                    val = 50; // Corresponsd to high power mode (hr and ecg)
                 }
                 Log.d(TAG, String.format("Writing value %d to characteristic", val));
                 writeCharacteristicValue(characteristic, val);
@@ -321,6 +334,9 @@ public class BluetoothLeService extends Service {
         }
     }
 
+    /**
+     * Required for the binding to this service by activities
+     */
     public class LocalBinder extends Binder {
         BluetoothLeService getService() {
             return BluetoothLeService.this;
@@ -334,43 +350,18 @@ public class BluetoothLeService extends Service {
 
     @Override
     public boolean onUnbind(Intent intent) {
-        // After using a given device, you should make sure that BluetoothGatt.close() is called
-        // such that resources are cleaned up properly.  In this particular example, close() is
-        // invoked when the UI is disconnected from the Service.
+        // Do not close the bluetooth connection as other activities might use the same connection
         return super.onUnbind(intent);
     }
 
     private final IBinder mBinder = new LocalBinder();
 
-    public int initDB(){
-        db = AppDatabase.getDatabase(this);
-
-        startTime = db.insertDefaultValues();
-        return 0;
-    }
-
     @Override
     public void onDestroy() {
+        // Gracefully disconnect and close the bluetooth connection
         disconnect();
         close();
         super.onDestroy();
-    }
-
-    public void threadedTestData(){
-        initDB();
-        long i = 1;
-        int length = db.ecgDao().count();
-        int perSec = 10;
-        long mult = 1000 / perSec;
-        while(i < (length) / perSec){
-            try {
-                TimeUnit.MILLISECONDS.sleep(1000/perSec);
-            } catch (InterruptedException e) {
-                //e.printStackTrace();
-            }
-            broadcastUpdatei(ACTION_DATA_AVAILABLE, startTime + i*mult);
-            i++;
-        }
     }
 
     /**
@@ -382,25 +373,6 @@ public class BluetoothLeService extends Service {
         if(initialized) return true;
         initialized = true;
         db = AppDatabase.getDatabase(this);
-
-//        mMQTTClient = new MqttAndroidClient(this.getApplicationContext(), "ADDRESS", "ID");
-//        try{
-//            Log.i("Connection", "Starting connection ");
-//            IMqttToken token = mMQTTClient.connect();
-//            token.setActionCallback(new IMqttActionListener() {
-//                @Override
-//                public void onSuccess(IMqttToken asyncActionToken) {
-//                    Log.i("Connection", "success ");
-//                }
-//
-//                @Override
-//                public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-//                    Log.e("Connection", "Failed "+ Arrays.toString(exception.getStackTrace()));
-//                }
-//            });
-//        } catch (MqttException error){
-//            Log.e("Connection", "Error "+ Arrays.toString(error.getStackTrace()));
-//        }
 
         // For API level 18 and above, get a reference to BluetoothAdapter through
         // BluetoothManager.
@@ -434,9 +406,7 @@ public class BluetoothLeService extends Service {
      * @param address The device address of the destination device.
      *
      * @return Return true if the connection is initiated successfully. The connection result
-     *         is reported asynchronously through the
-     *         {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
-     *         callback.
+     *         is reported asynchronously through the mGattCallback callback.
      */
     public boolean connect(final String address) {
         if (mBluetoothAdapter == null) {
@@ -484,9 +454,7 @@ public class BluetoothLeService extends Service {
 
     /**
      * Disconnects an existing connection or cancel a pending connection. The disconnection result
-     * is reported asynchronously through the
-     * {@code BluetoothGattCallback#onConnectionStateChange(android.bluetooth.BluetoothGatt, int, int)}
-     * callback.
+     * is reported asynchronously through the mGattCallback callback.
      */
     public void disconnect() {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
@@ -510,8 +478,7 @@ public class BluetoothLeService extends Service {
 
     /**
      * Request a read on a given {@code BluetoothGattCharacteristic}. The read result is reported
-     * asynchronously through the {@code BluetoothGattCallback#onCharacteristicRead(android.bluetooth.BluetoothGatt, android.bluetooth.BluetoothGattCharacteristic, int)}
-     * callback.
+     * asynchronously through the mGattCallback callback.
      *
      * @param characteristic The characteristic to read from.
      */
@@ -570,7 +537,7 @@ public class BluetoothLeService extends Service {
             Log.d(TAG, "Enabling HR Notifications");
         }
 
-        // This is specific to Heart Rate Measurement.
+        // This is specific to ECG.
         if (UUID_ECG_MEASUREMENTS.equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = characteristic.getDescriptor(
                     UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
