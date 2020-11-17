@@ -182,9 +182,9 @@ public class ActivitySingleActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.activity_hr_min_label)).setText(R.string.activity_hr_min);
         ((TextView) findViewById(R.id.activity_hr_avg_label)).setText(R.string.activity_hr_avg);
         ((TextView) findViewById(R.id.activity_hr_max_label)).setText(R.string.activity_hr_max);
-        ((TextView) findViewById(R.id.activity_hr_min)).setText(Collections.min(mHRs, new hrCompare()).heartRate + "/s");
-        ((TextView) findViewById(R.id.activity_hr_avg)).setText(mActivity.avg_hr + "/s");
-        ((TextView) findViewById(R.id.activity_hr_max)).setText(Collections.max(mHRs, new hrCompare()).heartRate + "/s");
+        ((TextView) findViewById(R.id.activity_hr_min)).setText(Collections.min(mHRs, new hrCompare()).heartRate + " bpm");
+        ((TextView) findViewById(R.id.activity_hr_avg)).setText(mActivity.avg_hr + " bpm");
+        ((TextView) findViewById(R.id.activity_hr_max)).setText(Collections.max(mHRs, new hrCompare()).heartRate + " bpm");
     }
 
     private void fillActivityZoneTable() {

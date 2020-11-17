@@ -32,8 +32,11 @@ import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.tudelft.iots.ecg.classes.HeartRateZones;
 import com.tudelft.iots.ecg.classes.SampleGattAttributes;
 import com.tudelft.iots.ecg.database.AppDatabase;
 import com.tudelft.iots.ecg.database.interfaces.ECGDao;
@@ -41,6 +44,7 @@ import com.tudelft.iots.ecg.database.interfaces.HeartRateDao;
 import com.tudelft.iots.ecg.database.model.ECG;
 import com.tudelft.iots.ecg.database.model.HeartRate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -63,6 +67,9 @@ public class BluetoothLeService extends Service {
 
     private long startTimeHR = -1;
     private long startTime = -1;
+
+    private List<HeartRate> lastHeartRates = new ArrayList<>();
+    private int hrNotificationId = 0;
 
     AppDatabase db;
 
@@ -251,6 +258,11 @@ public class BluetoothLeService extends Service {
                     HR.insert(hr);
                 }
             }).start();
+            new Thread(new Runnable() {
+                public void run() {
+                    checkHeartRateValues(hr);
+                }
+            }).start();
         } else if (UUID_ECG_MEASUREMENTS.equals(characteristic.getUuid())){
             // Extract ECG data from packet
             final byte[] data = characteristic.getValue();
@@ -295,6 +307,40 @@ public class BluetoothLeService extends Service {
             }
         }
         sendBroadcast(intent);
+    }
+
+    private void checkHeartRateValues(HeartRate newHr) {
+        while(lastHeartRates.size() >= 5){
+            lastHeartRates.remove(0);
+        }
+        lastHeartRates.add(newHr);
+        if (lastHeartRates.size() == 5){
+            List<Integer> hrs = new HeartRateZones(this).getZones();
+            float total = 0;
+            for (HeartRate hr : lastHeartRates){
+                total += (float) hr.heartRate / 5.0;
+            }
+            if(total < (hrs.get(0) * 0.5)){
+                showHRNotification(true, Math.round(total));
+            } else if (total > hrs.get(hrs.size() - 1)){
+                showHRNotification(false, Math.round(total));
+            }
+        }
+    }
+
+    private void showHRNotification(boolean low, int total) {
+        int text_resource = low ? R.string.notice_low_hr : R.string.notice_high_hr;
+        int title_resource = low ? R.string.notice_low_hr_title : R.string.notice_high_hr_title;
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "")
+                .setSmallIcon(R.drawable.notification)
+                .setContentTitle(getResources().getString(title_resource))
+                .setContentText(getString(text_resource, total))
+                .setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        // notificationId is a unique int for each notification that you must define
+        notificationManager.notify(hrNotificationId++, builder.build());
     }
 
     /**

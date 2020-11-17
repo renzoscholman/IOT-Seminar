@@ -1,5 +1,11 @@
 package com.tudelft.iots.ecg.classes;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+import com.tudelft.iots.ecg.database.model.HeartRate;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +14,11 @@ public class HeartRateZones {
 
     public HeartRateZones(int age){
         mAge = (float) age;
+    }
+
+    public HeartRateZones(Context context){
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        mAge = prefs.getInt("pref_user_age", 25);
     }
 
     public List<Integer> getZones(){

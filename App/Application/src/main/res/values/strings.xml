@@ -51,6 +51,10 @@
     <string name="notice_no_activity_history">No history of activities exist, please track an activity first.</string>
     <string name="notice_hr_monitor">Please connect to heart rate monitor before you continue using this app.</string>
     <string name="notice_ble_unsupported">This app will not work properly as the device does not support Bluetooth Low Energy.</string>
+    <string name="notice_low_hr">Your heart rate is abnormally low at %s, please make sure everything is fine.</string>
+    <string name="notice_high_hr">Your heart rate is abnormally high at %s, please make sure everything is fine.</string>
+    <string name="notice_low_hr_title">Abnormally low heart rate detected.</string>
+    <string name="notice_high_hr_title">Abnormally high heart rate detected.</string>
 
     <!-- Menu items -->
     <string name="menu_connect">Connect</string>
