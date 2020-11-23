@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
@@ -25,7 +24,6 @@ import com.tudelft.iots.ecg.classes.HeartRateZones;
 import com.tudelft.iots.ecg.classes.charts.ChartHelper;
 import com.tudelft.iots.ecg.database.AppDatabase;
 import com.tudelft.iots.ecg.database.model.Activity;
-import com.tudelft.iots.ecg.database.model.ECG;
 import com.tudelft.iots.ecg.database.model.HeartRate;
 
 import java.util.ArrayList;
@@ -238,7 +236,7 @@ public class ActivityTrackingActivity extends ServiceActivity {
             float seconds = 0;
             for (HeartRate hr : zone){
                 total += hr.heartRate;
-                seconds += (60.0 / hr.heartRate);
+                seconds += 1.0; // We save 1 hr per second.
             }
             current_activity.setZone(i, Math.round(seconds));
         }
@@ -291,17 +289,6 @@ public class ActivityTrackingActivity extends ServiceActivity {
         }
 
         chartHelper.setHRData(values);
-    }
-
-    private void setECGData(List<ECG> ecgs){
-        ArrayList<Entry> values = new ArrayList<>();
-        for (int i = 0; i < ecgs.size(); i++) {
-            ECG ecg = ecgs.get(i);
-            long x = ecg.timestamp - current_activity.timestamp_start;
-            values.add(new Entry((float)x, ecg.ecg));
-        }
-
-        chartHelper.setECGData(values);
     }
 
     @Override
