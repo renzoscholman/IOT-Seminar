@@ -2,16 +2,13 @@ package com.tudelft.iots.ecg;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.tudelft.iots.ecg.classes.DateFormatter;
 import com.tudelft.iots.ecg.classes.charts.ChartHelper;
 import com.tudelft.iots.ecg.database.model.Activity;
 import android.arch.lifecycle.Observer;
-import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -44,7 +41,6 @@ public class ActivitySingleActivity extends AppCompatActivity {
     private List<HeartRate> mHRs;
     private ChartHelper chartHelper;
 
-    private int mAge;
     private long mActivityID;
 
     protected Typeface mTfRegular;
@@ -126,8 +122,7 @@ public class ActivitySingleActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(R.string.title_tracked);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mAge = 25;
-        zones = new HeartRateZones(mAge).getZones();
+        zones = new HeartRateZones(this).getZones();
         db = AppDatabase.getDatabase(this);
         db.activityDao().getActivityById(mActivityID).observe(this, activityObserver);
 

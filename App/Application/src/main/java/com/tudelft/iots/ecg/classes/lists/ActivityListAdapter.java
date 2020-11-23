@@ -82,7 +82,7 @@ public class ActivityListAdapter extends BaseAdapter {
         final int seconds = activity.getTimeinZone(zone);
         viewHolder.times.setText(mFormat.format(activity.timestamp_start, activity.timestamp_end));
         viewHolder.date.setText(mFormat.formatDate(activity.timestamp_start));
-        List<Integer> zones = new HeartRateZones(25).getZones();
+        List<Integer> zones = new HeartRateZones(mInflator.getContext()).getZones();
         String zoneHR = "";
         if(zone > 0){
             zoneHR += zones.get(zone-1) + " < ";
