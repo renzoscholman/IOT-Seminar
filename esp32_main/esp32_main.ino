@@ -37,8 +37,8 @@ uint16_t arrForHR[ECG_DATA_ARR_LEN] = {0};
 uint16_t buffArrForHR[ECG_DATA_ARR_LEN] = {0};
 float heartRate = 0;
 const int sensorPin = 36;
-int LO_MinPin = 25;
-int LO_PlusPin = 26;
+int LO_MinPin = 19;
+int LO_PlusPin = 18;
 unsigned long currTime = 0;
 int globalIdx = 0;
 

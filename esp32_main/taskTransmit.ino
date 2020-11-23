@@ -51,6 +51,9 @@ class MyCallbacks: public BLECharacteristicCallbacks {
 void TaskTransmit(void *pvParameters)  // This is a task.
 {
   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LO_MinPin, INPUT);
+  pinMode(LO_PlusPin, INPUT);
+  
   uint8_t transmitData[] = {0};
   long prevTime = 0;
 
@@ -113,7 +116,7 @@ void TaskTransmit(void *pvParameters)  // This is a task.
     //    deviceConnected = true;     // only for HR calculation from saved sensorData
     //    ecgBufferReady = true;       // only for HR calculation from saved sensorData
     // notify changed value
-    if (deviceConnected) {
+    if (deviceConnected && !digitalRead(LO_MinPin) && !digitalRead(LO_PlusPin)) {
       if (mode == highPower) {
         if (bufferReady) {
           prevTime = millis();
