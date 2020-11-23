@@ -428,7 +428,7 @@ public class BluetoothLeService extends Service {
      * @return Return true if the initialization is successful.
      */
     public boolean initialize() {
-        if(initialized) return true;
+        if(initialized) return mBluetoothAdapter != null && mBluetoothAdapter != null;
         initialized = true;
         db = AppDatabase.getDatabase(this);
 
