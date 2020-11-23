@@ -4,17 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.tudelft.iots.ecg.database.model.HeartRate;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class HeartRateZones {
     private float mAge;
-
-    public HeartRateZones(int age){
-        mAge = (float) age;
-    }
 
     public HeartRateZones(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
